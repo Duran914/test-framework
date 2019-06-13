@@ -8,40 +8,35 @@ from selenium.webdriver.common.by import By
 
 browser = webdriver.Chrome('//Users/johnnyduran/Python/Selenium/chromedriver') 
 browser.implicitly_wait(30)
-browser.get('https://www.bcbg.com/en/draped-chiffon-maxi-dress/EPK6206201-809.html?dwvar_EPK6206201-809_color=809&cgid=dresses#start=2&dwvar_EPK6206201-809_color=809&cgid=dresses?usi_enable=1')
 
+# Navigates to url: Accepts 1 string argmuent
+def navigate_url(url):
+        browser.get(url)
 
+# button click: accepts a list of css selectors
+        # ['#btn', '#nextBtn']
 def click_btn(buttons):
     for button in buttons:
         browser.find_element_by_css_selector(button).click()
 
-def input_text(checkoutData):
-    for selector, value in checkoutData.items():
+# Input text: accepts an dict of css selector & input 
+        # eg. {'#formFirstname': 'Johnny'}
+def input_text(inputData):
+    for selector, value in inputData.items():
         browser.find_element_by_css_selector(selector).send_keys(value)
 
+# Hover & button click: accepts a list of a visible element selector and non-visible selector 
+        # ['#menuBar', '#dropDown a']
 def hover_click_btn(visibleElement, hiddenElement):
         visibleEl = browser.find_element_by_css_selector(visibleElement)
         hiddenEl = browser.find_element_by_css_selector(hiddenElement)
         ActionChains(browser).move_to_element(visibleEl).click(hiddenEl).perform()
 
-def usi_submit_click():
-        WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#usi_content .usi_submitbutton"))).click()
-
-def lanuch_usi_modal():
+# Submit Button Click: Accepts css selector or default value will be used
+def submit_click(selector="#usi_content .usi_submitbutton"):
+        WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+        
+# Launches Modal: No args accepted 
+def launch_modal():
         browser.execute_script("usi_js.display()")
 
-
-# browser.implicitly_wait(30)
-# browser.execute_script("usi_js.display()")
-
-# hover_click_btn('#usi_content', 'button.usi_submitbutton')
-# click_btn(['#usi_close']) # Worked 
-# click_btn(['#usi_content button'])
-
-# WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#usi_content .usi_submitbutton"))).click()
-
-
-# usiSubmitClick()
-
-lanuch_usi_modal()
-usi_submit_click()
