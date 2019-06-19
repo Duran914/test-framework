@@ -38,5 +38,5 @@ def submit_click(selector="#usi_content .usi_submitbutton"):
         
 # Launches Modal: No args accepted 
 def launch_modal():
-        browser.execute_script("usi_js.display()")
+        browser.execute_script("setTimeout( () => { usi_js.display(); }, 5000);")
 
