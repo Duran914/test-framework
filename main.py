@@ -4,9 +4,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import time
 
-
-browser = webdriver.Chrome('//Users/johnnyduran/Python/Selenium/chromedriver') 
+browser = webdriver.Chrome('insert dir to driver') 
 browser.implicitly_wait(30)
 
 # Navigates to url: Accepts 1 string argmuent
@@ -34,9 +34,19 @@ def hover_click_btn(visibleElement, hiddenElement):
 
 # Submit Button Click: Accepts css selector or default value will be used
 def submit_click(selector="#usi_content .usi_submitbutton"):
-        WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+        WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
         
 # Launches Modal: No args accepted 
 def launch_modal():
         browser.execute_script("setTimeout( () => { usi_js.display(); }, 5000);")
+
+def shutdown():
+        browser.quit()
+
+def halt_execution(sec):
+        time.sleep(sec)
+
+
+
+
 
