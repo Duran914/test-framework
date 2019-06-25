@@ -4,10 +4,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import time
+from time import sleep
+from config import browser # populate config.py
 
-browser = webdriver.Chrome('insert dir to driver') 
-browser.implicitly_wait(30)
+
 
 # Navigates to url: Accepts 1 string argmuent
 def navigate_url(url):
@@ -16,14 +16,12 @@ def navigate_url(url):
 # button click: accepts a list of css selectors
         # ['#btn', '#nextBtn']
 def click_btn(buttons):
-    for button in buttons:
-        browser.find_element_by_css_selector(button).click()
-
+        [browser.find_element_by_css_selector(button).click() for button in buttons]
+        
 # Input text: accepts an dict of css selector & input 
         # eg. {'#formFirstname': 'Johnny'}
 def input_text(inputData):
-    for selector, value in inputData.items():
-        browser.find_element_by_css_selector(selector).send_keys(value)
+        [browser.find_element_by_css_selector(selector).send_keys(value) for selector, value in inputData.items()]
 
 # Hover & button click: accepts a list of a visible element selector and non-visible selector 
         # ['#menuBar', '#dropDown a']
@@ -44,7 +42,7 @@ def shutdown():
         browser.quit()
 
 def halt_execution(sec):
-        time.sleep(sec)
+        sleep(sec)
 
 
 
