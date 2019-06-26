@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from time import sleep
-from config import browser # populate config.py
+from config import browser # populate config.py 
 
 
 
@@ -38,9 +38,11 @@ def submit_click(selector="#usi_content .usi_submitbutton"):
 def launch_modal():
         browser.execute_script("setTimeout( () => { usi_js.display(); }, 5000);")
 
+# Shuts down driver 
 def shutdown():
         browser.quit()
 
+# Halts execution of script (last case scenario)
 def halt_execution(sec):
         sleep(sec)
 
