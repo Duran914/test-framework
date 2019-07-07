@@ -1,35 +1,45 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from time import sleep
-from config import driver_path # populate config.py 
+import config  # populate config.py 
 
 
 
 # output campaign info and pass/fail. (will log test to a txt later)
-def test_info(company, campaign_type, site_id, driver_path=driver_path, device_type="desktop", headless=False):
-        browser_options = Options()
+def test_info(company, campaign_type, site_id, driver=config.chrome_driver, device_type="desktop", headless=False):
+        chrome_options = ChromeOptions()
+        firefox_options = FirefoxOptions()
         global browser
 
-        # Mobile execution
+        # Mobile execution (Chrome only)
         if device_type == "mobile":
                 mobile_emulation = { "deviceName": "iPhone X" } # Iphone X for now
-                browser_options.add_experimental_option("mobileEmulation", mobile_emulation)
-        else:
-                browser_options.add_argument("--window-size=1920x1080") # Desktop execution
+                chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
 
-        # Runs broswer in headless mode
-        if headless == True:
-                browser_options.add_argument("--headless")
-                browser = webdriver.Chrome(driver_path, chrome_options=browser_options)
-        else:
-                browser = webdriver.Chrome(driver_path, chrome_options=browser_options) 
-        
-        # Log script header
+        # Broswer driver
+        if driver == "chrome":
+                # Runs broswer in headless mode
+                if headless == True:
+                        chrome_options.add_argument("--headless")
+                        chrome_options.add_argument("--window-size=1920x1080") # Desktop execution
+                browser = webdriver.Chrome(executable_path=config.chrome_driver, chrome_options=chrome_options) 
+
+        elif driver == "firefox":
+                if headless == True:
+                        firefox_options.headless = True
+                        firefox_options.add_argument("--window-size=1920x1080")
+                browser = webdriver.Firefox(executable_path=config.firefox_driver, options=firefox_options) 
+
+        elif driver == "safari":
+                browser = webdriver.Safari(executable_path=config.safari_driver) 
+
+        # Log script info & results
         results = f"{company} {campaign_type} {site_id}: Running..." 
         print(results)
 
@@ -66,9 +76,14 @@ def navigate_url(url):
 def click_btn(buttons, locate_by="css"):
         check_selector(locate_by)
         if locate_by == "css":
-                [browser.find_element_by_css_selector(button).click() for button in buttons]
+                # [browser.find_element_by_css_selector(button).click() for button in buttons]
+                for button in buttons:
+                       browser.find_element_by_css_selector(button).click()
+                       print(f"{button} clicked!")  
         elif locate_by == "xpath":
-                [browser.find_element_by_xpath(button).click() for button in buttons]
+                for button in buttons:
+                        browser.find_element_by_xpath(button).click()
+                        print(f"{button} clicked!")
         
 
 # Input text: accepts an dict of css selector & input 
@@ -133,12 +148,11 @@ def take_screenshot(screenshot_name="default.png"):
         browser.save_screenshot(f"{screenshot_name}.png")
 
 
-test_info("Office-Furniture-to-go", "TT", "24586", driver_path=driver_path, device_type="desktop")
+test_info("Office-Furniture-to-go", "TT", "24586", driver="firefox", device_type="desktop", headless=True)
 navigate_url('https://www.officefurniture2go.com/')
 click_btn(['#ctl00_mainPlaceHolder_hlHeroSecond', '#clearFilters a'], locate_by="css")
 append_url('usi_enable=1')
 input_text({"#ctl00_ucHeader_tbSearchQuery": "Testing"}, locate_by="css")
-take_screenshot('input_test')
 shutdown()
 
 
