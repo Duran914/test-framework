@@ -1,4 +1,5 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# Local path to drivers
 
-browser = "path/to/drivers"
+chrome_driver = "/"
+firefox_driver = "/"
+safari_driver = "/"
