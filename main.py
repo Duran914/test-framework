@@ -102,7 +102,7 @@ def click_btn(buttons, locate_by="css"):
                 for button in buttons:
                         browser.find_element_by_xpath(button).click()
                         print(f"{button} clicked!")
-        
+
 
 # Input text: accepts an dict of css selector & input 
         # eg. {'#formFirstname': 'Johnny'}
@@ -169,7 +169,8 @@ def get_cookie(cookie_name):
                 print("Could not retrieve session cookie")
         else:
                 cookie = browser.get_cookie(cookie_name)
-                print(f"USI session: {cookie}")
+                session_name = cookie["value"]
+                print(f"USI session: {session_name}")
 
 
 # Shuts down driver 
@@ -188,16 +189,15 @@ def take_screenshot(screenshot_name="default.png"):
         browser.save_screenshot(f"{screenshot_name}.png")
 
 
-# initiate_test("Office-Furniture-to-go", "TT", "24586", driver="firefox", device_type="desktop", headless=False)
-# navigate_url('https://www.officefurniture2go.com/')
-# get_cookie('shopperID')
-# click_btn(['#ctl00_mainPlaceHolder_hlHeroSecond', '#clearFilters a'], locate_by="css")
-# append_url('usi_enable=1')
-# input_text({"#ctl00_ucHeader_tbSearchQuery": "Testing"}, locate_by="css")
-# shutdown()
+initiate_test("Office-Furniture-to-go", "TT", "24586", driver="firefox", device_type="desktop", headless=False)
+navigate_url('https://www.officefurniture2go.com/')
+get_cookie('shopperID')
+click_btn(['#ctl00_mainPlaceHolder_hlHeroSecond', '#clearFilters a'], locate_by="css")
+append_url('usi_enable=1')
+input_text({"#ctl00_ucHeader_tbSearchQuery": "Testing"}, locate_by="css")
+shutdown()
 
-initiate_test("Plp jewles", "TT", "24586", driver="firefox", device_type="mobile", headless=False)
-navigate_url("https://www.peoplesjewellers.com/wedding/engagement-rings/c/3216973")
-lc_input("testing")
-
+# initiate_test("Plp jewles", "TT", "24586", driver="chrome", device_type="desktop", headless=False)
+# navigate_url("https://www.peoplesjewellers.com/wedding/engagement-rings/c/3216973")
+# lc_input("testing")
 
