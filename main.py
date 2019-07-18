@@ -150,7 +150,7 @@ def click_cta(selector="#usi_content .usi_submitbutton"):
 # Clicks a button when it becomes visible
 def btn_click_when_visible(button, locate_by="css"):
         check_selector(locate_by)
-
+        
         if locate_by == "css":
                 WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
         elif locate_by == "xpath":
