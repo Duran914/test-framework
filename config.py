@@ -1,6 +1,6 @@
 # Fill in local driver paths 
 
-chrome_driver = "/Users/jonathanduran/testing/selenium/drivers/chromedriver"
-firefox_driver = "/Users/jonathanduran/testing/selenium/drivers/geckodriver"
-safari_driver = "/usr/bin/safaridriver"
+chrome_driver = "/"
+firefox_driver = "/"
+safari_driver = "/"
 ie_driver = ""
