@@ -123,23 +123,38 @@ def lc_input(input_email, selector="#usi_content #usi_email_container #usi_email
         WebDriverWait(browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(input_email)
 
 
-# Hover & button click: accepts a list of a visible element selector and non-visible selector 
-        # ['#menuBar', '#dropDown a']
-def hover_click_btn(visibleElement, hiddenElement, locate_by="css"):
+# Hover & button click: accepts a dict of a visible element selector and non-visible selector 
+        # {'#menuBar', '#dropDown a'}
+def hover_click_btn(elements, locate_by="css"):
         check_selector(locate_by)
-        visibleEl = browser.find_element_by_css_selector(visibleElement)
-        hiddenEl = browser.find_element_by_css_selector(hiddenElement)
-        ActionChains(browser).move_to_element(visibleEl).click(hiddenEl).perform()
+        if type(elements) != dict:
+                log_error({'type':"hover_click_btn accepts a dictionary of visiable and hidden elements"})
+
+        if locate_by == "css":
+                for v_el, h_el in elements.items():
+                        visible_element = browser.find_element_by_css_selector(v_el)
+                        hidden_element = browser.find_element_by_css_selector(h_el)
+                        ActionChains(browser).move_to_element(visible_element).click(hidden_element).perform()
+        elif locate_by == "xpath":
+                for v_el, h_el in elements.items():
+                        visible_element = browser.find_element_by_xpath(v_el)
+                        hidden_element = browser.find_element_by_xpath(h_el)
+                        ActionChains(browser).move_to_element(visible_element).click(hidden_element).perform()
 
 
 # Submit Button Click: Accepts css selector or default value will be used (USI)
-def submit_click(selector="#usi_content .usi_submitbutton"):
+def click_cta(selector="#usi_content .usi_submitbutton"):
         WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
 
 
 # Clicks a button when it becomes visible
-def btn_click_when_visible(selector):
-        WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+def btn_click_when_visible(button, locate_by="css"):
+        check_selector(locate_by)
+
+        if locate_by == "css":
+                WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
+        elif locate_by == "xpath":
+                WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.XPATH, button))).click()
         
 
 # Launches Modal: No args accepted (USI)
