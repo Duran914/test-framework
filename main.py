@@ -8,6 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from time import sleep
 import config  # Create & populate config.py 
+from termcolor import colored
+import sys
 
 
 
@@ -85,42 +87,61 @@ def log_error(err):
 def navigate_url(url):
         browser.get(url)
 
+# terminate test 
+def end_test():
+        pass
 
-# button click: accepts a list of css selectors
-        # ['#btn', '#nextBtn']
+
+# button click: accepts a dict of button/link names & selector
+        # {'Add to cart button':'#cart'}
 def click_btn(buttons, locate_by="css"):
         check_selector(locate_by)
-        if type(buttons) != list:
+        if type(buttons) != dict:
                 log_error({'type':"click_btn accepts a list of selectors"})
 
         if locate_by == "css":
-                # [browser.find_element_by_css_selector(button).click() for button in buttons]
-                for button in buttons:
-                       browser.find_element_by_css_selector(button).click()
-                       print(f"{button} clicked!")  
+                for name, button in buttons.items():
+                        try: 
+                               browser.find_element_by_css_selector(button).click()
+                               print(f"{name} => " + colored("clicked ✅", color="green"))
+                        except Exception:
+                               print(f"{name} => " +  colored("Could not be located ❌", color="red"))
+                               end_test()
+
         elif locate_by == "xpath":
-                for button in buttons:
-                        browser.find_element_by_xpath(button).click()
-                        print(f"{button} clicked!")
+                for name, button in buttons.items():
+                        try: 
+                               browser.find_element_by_xpath(button).click()
+                               print(f"{name} => " + colored("clicked ✅", color="green"))
+                        except Exception:
+                               print(f"{name} => " +  colored("Could not be located ❌", color="red"))
+                               end_test()
 
 
 # Input text: accepts an dict of css selector & input 
         # eg. {'#formFirstname': 'Johnny'}
+        #{"name": ["#formFirstname", "johnny"]}
 def input_text(input_data, locate_by="css"):
         check_selector(locate_by)
         if type(input_data) != dict:
                 log_error({'type':"input_text accepts a dictionary of selector and text"})
 
         if locate_by == "css":
-                [browser.find_element_by_css_selector(selector).send_keys(value) for selector, value in input_data.items()]
+                for name, value in input_data.items():
+                        browser.find_element_by_css_selector(value[0]).send_keys(value[1])
+                        print(f'"{value[1]}" entered into {name} ✅')
         elif locate_by == "xpath":
-                [browser.find_element_by_xpath(selector).send_keys(value) for selector, value in input_data.items()]
+                for name, value in input_data.items():
+                        browser.find_element_by_xpath(value[0]).send_keys(value[1])
+                        print(f'"{value[1]}" entered into {name} ✅')
+
 
 
 # Inputs email address for LC modal (USI)
         # takes email address string and optional seconds arg
 def lc_input(input_email, selector="#usi_content #usi_email_container #usi_email", sec=60):
         WebDriverWait(browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(input_email)
+        print(f"{input_email} entered into LC ✅")
 
 
 # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
@@ -135,6 +156,7 @@ def hover_click_btn(elements, locate_by="css"):
                         visible_element = browser.find_element_by_css_selector(v_el)
                         hidden_element = browser.find_element_by_css_selector(h_el)
                         ActionChains(browser).move_to_element(visible_element).click(hidden_element).perform()
+                        print(f" Hovered over {hidden_element} ✅ \n {visible_element} clicked ✅")
         elif locate_by == "xpath":
                 for v_el, h_el in elements.items():
                         visible_element = browser.find_element_by_xpath(v_el)
@@ -145,6 +167,7 @@ def hover_click_btn(elements, locate_by="css"):
 # Submit Button Click: Accepts css selector or default value will be used (USI)
 def click_cta(selector="#usi_content .usi_submitbutton"):
         WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+        print("CTA submit clicked ✅")
 
 
 # Clicks a button when it becomes visible
@@ -153,8 +176,10 @@ def btn_click_when_visible(button, locate_by="css"):
         
         if locate_by == "css":
                 WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
+                print(f"{button} clicked ✅")
         elif locate_by == "xpath":
                 WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.XPATH, button))).click()
+                print(f"{button} clicked ✅")
         
 
 # Launches Modal: No args accepted (USI)
@@ -192,7 +217,7 @@ def get_cookie(cookie_name):
 def shutdown():
         sleep(5)
         browser.quit()
-        print("Test complete")
+        print(colored("Test Complete", color="green"))
 
 
 # Halts execution of script (last case scenario)
@@ -204,12 +229,17 @@ def take_screenshot(screenshot_name="default.png"):
         browser.save_screenshot(f"{screenshot_name}.png")
 
 
-initiate_test("Office-Furniture-to-go", "TT", "24586", driver="firefox", device_type="desktop", headless=False)
+initiate_test("Office-Furniture-to-go", "TT", "24586", driver="chrome", device_type="desktop", headless=True)
 navigate_url('https://www.officefurniture2go.com/')
-get_cookie('shopperID')
-click_btn(['#ctl00_mainPlaceHolder_hlHeroSecond', '#clearFilters a'], locate_by="css")
-append_url('usi_enable=1')
-input_text({"#ctl00_ucHeader_tbSearchQuery": "Testing"}, locate_by="css")
+# get_cookie('shopperID')
+click_btn({
+        "Shop conference tables button":'#ctl00_mainPlaceHolder_hlHeroSecond', 
+        "Clear button":'#clearFiltes a', 
+        "Shopping cart button": ".shopping-cart-button"}, locate_by="css")
+# append_url('usi_enable=1')
+
+# input_text({"Main search bar":["#ctl00_ucHeader_tbSearchQuery", "Testing"]}, locate_by="css")
+
 shutdown()
 
 # initiate_test("Plp jewles", "TT", "24586", driver="chrome", device_type="desktop", headless=False)
