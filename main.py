@@ -62,14 +62,24 @@ def initiate_test(company, campaign_type, site_id, driver="chrome", device_type=
 
 
 # selector validation
-def check_selector(locate_by="css"):
-        # Allowed locators
-        allowed_locator = {"xpath", "css"}
+# def check_selector(locate_by="css"):
+#         # Allowed locators
+#         allowed_locator = {"xpath", "css"}
 
+#         if locate_by not in allowed_locator:
+#                 log_error({"value": "Enter a valid element locator"})
+#         else:
+#                 pass
+
+def precheck_data(elements, data_type, locate_by="css"):
+        allowed_locator = {"xpath", "css"}
         if locate_by not in allowed_locator:
-                log_error({"value": "Enter a valid element locator"})
+                log_error({"value": f"{locate_by} is not a valid locator. Valid locators are {allowed_locator}"})
+        elif data_type[1] != type(elements):
+                log_error({"type": f"{data_type[0]} accpets a {data_type[1]}"})
         else:
                 pass
+
 
 
 # Send error to console (will update to write to file)
@@ -100,9 +110,11 @@ def element_not_located(name, element=""):
 # button click: accepts a dict of button/link names & selector
         # {'Add to cart button':'#cart'}
 def click_btn(buttons, locate_by="css"):
-        check_selector(locate_by)
-        if type(buttons) != dict:
-                log_error({'type':"click_btn accepts a list of selectors"})
+        data_type = ["click_btn", dict]
+        precheck_data(buttons, data_type, locate_by)
+        # check_selector(locate_by)
+        # if type(buttons) != dict:
+        #         log_error({'type':"click_btn accepts a list of selectors"})
 
         if locate_by == "css":
                 for name, button in buttons.items():
@@ -125,7 +137,7 @@ def click_btn(buttons, locate_by="css"):
         # eg. {'#formFirstname': 'Johnny'}
         #{"name": ["#formFirstname", "johnny"]}
 def input_text(input_data, locate_by="css"):
-        check_selector(locate_by)
+        # check_selector(locate_by)
         if type(input_data) != dict:
                 log_error({'type':"input_text accepts a dictionary of selector and text"})
 
@@ -151,7 +163,7 @@ def input_text(input_data, locate_by="css"):
 def lc_input(input_email, selector="#usi_content #usi_email_container #usi_email", sec=60):
         try:
                 WebDriverWait(browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(input_email)
-                print(f"{input_email} entered into LC ")
+                print(f"{input_email} => " + colored("entered into LC", color="green"))
         except Exception:
                 print(colored("LC input falied", color="red"))
 
@@ -159,7 +171,7 @@ def lc_input(input_email, selector="#usi_content #usi_email_container #usi_email
 # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
         # {'#menuBar', '#dropDown a'}
 def hover_click_btn(elements, locate_by="css"):
-        check_selector(locate_by)
+        # check_selector(locate_by)
         if type(elements) != dict:
                 log_error({'type':"hover_click_btn accepts a dictionary of visiable and hidden elements"})
 
@@ -187,7 +199,7 @@ def click_cta(selector="#usi_content .usi_submitbutton"):
 
 # Clicks a button when it becomes visible
 def btn_click_when_visible(button, locate_by="css"):
-        check_selector(locate_by)
+        # check_selector(locate_by)
         
         if locate_by == "css":
                 WebDriverWait(browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
@@ -248,14 +260,17 @@ def take_screenshot(screenshot_name="default.png"):
 initiate_test("Office-Furniture-to-go", "TT", "24586", driver="chrome", device_type="desktop", headless=True)
 navigate_url('https://www.officefurniture2go.com/')
 # get_cookie('shopperID')
-click_btn({
-        "Shop conference tables button":'#ctl00_mainPlaceHolder_hlHeroSecond', 
-        "Clear button":'#clearFilters a', 
-        "Shopping cart button": ".shopping-cart-button"}, locate_by="css")
+# click_btn({
+#         "Shop conference tables button":'#ctl00_mainPlaceHolder_hlHeroSecond', 
+#         "Clear button":'#clearFilters a', 
+#         "Shopping cart button": ".shopping-cart-button"}, locate_by="css")
+click_btn({"Shop conference tables button":'#ctl00_mainPlaceHolder_hlHeroSecond'})
+
 # append_url('usi_enable=1')
 
 # input_text({"Main search bar":["#ctl00_ucHeader_tbSearchQuer", "Testing"]}, locate_by="css")
 
+# hover_click_btn({".shopping-cart-button": ".cart-hover-checkout-button"}, locate_by="css")
 shutdown()
 
 # initiate_test("Plp jewles", "TT", "24586", driver="chrome", device_type="desktop", headless=False)
