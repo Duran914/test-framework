@@ -28,13 +28,13 @@ class USI:
                 available_browsers = {"chrome", "firefox", "safari"}
 
                 if self.driver not in available_browsers:
-                        USI.__log_error(self, err={"value": f"{self.driver} is not valid. Please enter a valid browser"})
+                        USI._log_error(self, err={"value": f"{self.driver} is not valid. Please enter a valid browser"})
 
                 if self.device_type != "desktop" and self.device_type != "mobile":
-                        USI.__log_error(self, err={"value": "Set device type: desktop or mobile"})
+                        USI._log_error(self, err={
+                                "value": f"{self.device_type} is an invalid device type. Set device type: desktop or mobile"
+                                })
 
-                if self.site_id == None:
-                        USI.__log_error(self, err={"value": "Enter a site id"}) #(USI)
 
                 chrome_options = ChromeOptions()
                 firefox_options = FirefoxOptions()
@@ -45,7 +45,7 @@ class USI:
                         mobile_emulation = { "deviceName": "iPhone X" } # Iphone X for now
                         chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
                 elif self.device_type == "mobile" and self.driver == "firefox" or self.device_type == "mobile" and self.driver == "safari":
-                        USI.__log_error(self, err={"value": "Only chrome can run mobile execution"})
+                        USI._log_error(self, err={"value": "Only chrome can run mobile execution"})
 
                 # Broswer driver
                 if self.driver == "chrome":
@@ -65,9 +65,9 @@ class USI:
                         self.browser = webdriver.Safari(executable_path=config.safari_driver) 
 
                 # Log script info & results
-                results = f"{self.company} {self.campaign_type} {self.site_id}: Running..."
+                results = colored(self.company + " " + self.campaign_type + " " + 
+                self.site_id, color="cyan") + " => " + colored("Running...", color="green")
                 print(results)
-
 
         # selector validation
         # def check_selector(locate_by="css"):
@@ -75,23 +75,23 @@ class USI:
         #         allowed_locator = {"xpath", "css"}
 
         #         if locate_by not in allowed_locator:
-        #                 __log_error({"value": "Enter a valid element locator"})
+        #                 _log_error({"value": "Enter a valid element locator"})
         #         else:
         #                 pass
 
-        def __precheck_data(self, elements, data_type, locate_by="css"):
+        def _precheck_data(self, elements, data_type, locate_by="css"):
                 allowed_locator = {"xpath", "css"}
                 if locate_by not in allowed_locator:
-                        USI.__log_error(self, err={"value": f"{locate_by} is not a valid locator. Valid locators are {allowed_locator}"})
+                        USI._log_error(self, err={"value": f"{locate_by} is not a valid locator. Valid locators are {allowed_locator}"})
                 elif data_type[1] != type(elements):
-                        USI.__log_error(self, err={"type": f"{data_type[0]} accpets a {data_type[1]}"})
+                        USI._log_error(self, err={"type": f"{data_type[0]} accpets a {data_type[1]}"})
                 else:
                         pass
 
 
 
         # Send error to console (will update to write to file)
-        def __log_error(self, err):
+        def _log_error(self, err):
                 for err_type, message in err.items():
                         if err_type == "value":
                                 raise ValueError(message)
@@ -104,26 +104,26 @@ class USI:
 
 
         # terminate test 
-        def __element_not_located(self, name, element=""):
+        def _element_not_located(self, name, element=""):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
-                print(f"{name}: {element}  => " +  colored("Element could not be located", color="red"))
+                print(f"{name}: {element} => " +  colored("Element could not be located", color="red"))
                 sys.exit()
 
 
         # Navigates to url: Accepts 1 string argmuent
         def navigate_url(self, url):
                 self.browser.get(url)
-                print(colored(f"Navigating to {url}", color="green"))
+                print("Navigating to => " + colored(url, color="blue"))
 
 
         # button click: accepts a dict of button/link names & selector
                 # {'Add to cart button':'#cart'}
         def click_btn(self, buttons, locate_by="css"):
                 data_type = ["click_btn", dict]
-                USI.__precheck_data(self, buttons, data_type, locate_by)
+                USI._precheck_data(self, buttons, data_type, locate_by)
                 # check_selector(locate_by)
                 # if type(buttons) != dict:
-                #         __log_error({'type':"click_btn accepts a list of selectors"})
+                #         _log_error({'type':"click_btn accepts a list of selectors"})
 
                 if locate_by == "css":
                         for name, button in buttons.items():
@@ -131,7 +131,7 @@ class USI:
                                         self.browser.find_element_by_css_selector(button).click()
                                         print(f"{name} => " + colored("clicked", color="green"))
                                 except Exception:
-                                        USI.__element_not_located(name, button)
+                                        USI._element_not_located(name, button)
 
                 elif locate_by == "xpath":
                         for name, button in buttons.items():
@@ -139,7 +139,7 @@ class USI:
                                         self.browser.find_element_by_xpath(button).click()
                                         print(f"{name} => " + colored("clicked", color="green"))
                                 except Exception:
-                                        USI.__element_not_located(name, button)
+                                        USI._element_not_located(name, button)
 
 
         # Input text: accepts an dict of css selector & input 
@@ -148,7 +148,7 @@ class USI:
         def input_text(self, input_data, locate_by="css"):
                 # check_selector(locate_by)
                 if type(input_data) != dict:
-                        USI.__log_error(self, err={'type':"input_text accepts a dictionary of selector and text"})
+                        USI._log_error(self, err={'type':"input_text accepts a dictionary of selector and text"})
 
                 if locate_by == "css":
                         for name, value in input_data.items():
@@ -156,14 +156,14 @@ class USI:
                                         self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
                                         print(f'"{value[1]}" entered into {name} ')
                                 except Exception:
-                                        USI.__element_not_located(name,value[0])
+                                        USI._element_not_located(name,value[0])
                 elif locate_by == "xpath":
                         for name, value in input_data.items():
                                 try:
                                         self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
                                         print(f'"{value[1]}" entered into {name} ')
                                 except Exception:
-                                        USI.__element_not_located(name,value[0])
+                                        USI._element_not_located(name,value[0])
 
 
 
@@ -178,32 +178,51 @@ class USI:
 
 
         # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
-                # {'#menuBar', '#dropDown a'}
+                # {"checkout button": ['#menuBar', '#dropDown a'}
         def hover_click_btn(self, elements, locate_by="css"):
                 # check_selector(locate_by)
                 if type(elements) != dict:
-                        USI.__log_error(self, err={'type':"hover_click_btn accepts a dictionary of visiable and hidden elements"})
+                        USI._log_error(self, err={'type':"hover_click_btn accepts a dictionary of visiable and hidden elements"})
 
                 if locate_by == "css":
-                        for v_el, h_el in elements.items():
-                                visible_element = self.browser.find_element_by_css_selector(v_el)
-                                hidden_element = self.browser.find_element_by_css_selector(h_el)
+                        for name, elements in elements.items():
+                                try:
+                                        visible_element = self.browser.find_element_by_css_selector(elements[0])
+                                except Exception:
+                                        USI._element_not_located(self, name="visible element", element=elements[0])
+                                try:
+                                        hidden_element = self.browser.find_element_by_css_selector(elements[1])
+                                except Exception:
+                                        USI._element_not_located(self,  name="hidden element",  element=elements[1])
+
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
-                                print(f" Hovered over {hidden_element}  \n {visible_element} clicked ")
+                                print("Visible element => " + colored("Hovered", color="green"))
+                                print(f"{name} => " + colored("clicked", color="green"))
+
+
                 elif locate_by == "xpath":
-                        for v_el, h_el in elements.items():
-                                visible_element = self.browser.find_element_by_xpath(v_el)
-                                hidden_element = self.browser.find_element_by_xpath(h_el)
+                        for name, elements in elements.items():
+                                try:
+                                        visible_element = self.browser.find_element_by_xpath(elements[0])
+                                except Exception:
+                                        USI._element_not_located(self, name="visible element", element=elements[0])
+                                try:
+                                        hidden_element = self.browser.find_element_by_xpath(elements[1])
+                                except Exception:
+                                        USI._element_not_located(self,  name="hidden element",  element=elements[1])
+
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
+                                print("Visible element => " + colored("Hovered", color="green"))
+                                print(f"{name} => " + colored("clicked", color="green"))
 
 
         # Submit Button Click: Accepts css selector or default value will be used (USI)
         def click_cta(self, selector="#usi_content .usi_submitbutton"):
                 try:
                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
-                        print("CTA submit clicked ")
+                        print("CTA => " + colored("Clicked", color="green"))
                 except Exception:
-                        print(colored("CTA not found", color="red"))
+                        print("CTA => " + colored("Not found", color="red"))
 
 
         # Clicks a button when it becomes visible
@@ -221,6 +240,8 @@ class USI:
         # Launches Modal: No args accepted (USI)
         def launch_modal(self):
                 self.browser.execute_script("setTimeout( () => { usi_js.display(); }, 5000);")
+                print("USI Modal => " + colored("Launched", color="green"))
+
 
         # Executes any javascript code
         def execute_js(self, script):
@@ -235,7 +256,6 @@ class USI:
                 else:
                         page_url = self.browser.current_url + "?" + param
                 USI.navigate_url(self, page_url)
-                print(f"Navigated to {page_url}")
 
 
         # Retrieves session cookie
@@ -251,11 +271,11 @@ class USI:
 
         # Shuts down driver 
         def shut_down(self):
-                print("Shutting down driver")
+                print(colored("Shutting down driver", color="yellow"))
                 sleep(5)
                 self.browser.quit()
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
-                # print(colored("Test Complete", color="green"))
+                print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored("All Tests Passed ", color="green"))
 
 
         # Halts execution of script (last case scenario)
@@ -266,8 +286,19 @@ class USI:
         def take_screenshot(self, screenshot_name="default.png"):
                 self.browser.save_screenshot(f"{screenshot_name}.png")
 
-usi = USI("Office-Furniture-to-go", "TT", "24586", driver="chrome", device_type="desktop")
-usi.initiate_test()
-usi.navigate_url('https://www.officefurniture2go.com/')
-usi.click_btn({"Shop conference tables button":'#ctl00_mainPlaceHolder_hlHeroSecond'})
-usi.shut_down()
+
+
+# Hurricane Golf TT 23220
+
+hurr_TT_23220 = USI("Hurricane Golf", "TT", "23220", driver="chrome", device_type="desktop", headless=True)
+hurr_TT_23220.initiate_test()
+hurr_TT_23220.navigate_url("https://www.hurricanegolf.com/close-out-golf-balls/titleist-pro-v1-white-golf-balls-1-dozen.html")
+hurr_TT_23220.click_btn({"Add to cart button":".button.btn-cart"}, locate_by="css")
+hurr_TT_23220.halt_execution(3)
+hurr_TT_23220.navigate_url("https://www.hurricanegolf.com/checkout/cart/")
+hurr_TT_23220.halt_execution(3)
+hurr_TT_23220.launch_modal()
+hurr_TT_23220.click_cta()
+hurr_TT_23220.shut_down()
+
+
