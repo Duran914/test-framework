@@ -35,10 +35,8 @@ class USI:
                                 "value": f"{self.device_type} is an invalid device type. Set device type: desktop or mobile"
                                 })
 
-
                 chrome_options = ChromeOptions()
                 firefox_options = FirefoxOptions()
-                # global browser
 
                 # Mobile execution (Chrome only)
                 if self.device_type == "mobile" and self.driver == "chrome":
@@ -69,15 +67,6 @@ class USI:
                 self.site_id, color="cyan") + " => " + colored("Running...", color="green")
                 print(results)
 
-        # selector validation
-        # def check_selector(locate_by="css"):
-        #         # Allowed locators
-        #         allowed_locator = {"xpath", "css"}
-
-        #         if locate_by not in allowed_locator:
-        #                 _log_error({"value": "Enter a valid element locator"})
-        #         else:
-        #                 pass
 
         def _precheck_data(self, elements, data_type, locate_by="css"):
                 allowed_locator = {"xpath", "css"}
@@ -118,12 +107,9 @@ class USI:
 
         # button click: accepts a dict of button/link names & selector
                 # {'Add to cart button':'#cart'}
-        def click_btn(self, buttons, locate_by="css"):
-                data_type = ["click_btn", dict]
+        def click(self, buttons, locate_by="css"):
+                data_type = ["click", dict]
                 USI._precheck_data(self, buttons, data_type, locate_by)
-                # check_selector(locate_by)
-                # if type(buttons) != dict:
-                #         _log_error({'type':"click_btn accepts a list of selectors"})
 
                 if locate_by == "css":
                         for name, button in buttons.items():
@@ -142,13 +128,11 @@ class USI:
                                         USI._element_not_located(name, button)
 
 
-        # Input text: accepts an dict of css selector & input 
-                # eg. {'#formFirstname': 'Johnny'}
+        # Input text: accepts an dict of name and selector/input 
                 #{"name": ["#formFirstname", "johnny"]}
         def input_text(self, input_data, locate_by="css"):
-                # check_selector(locate_by)
-                if type(input_data) != dict:
-                        USI._log_error(self, err={'type':"input_text accepts a dictionary of selector and text"})
+                data_type = ["input_text", dict]
+                USI._precheck_data(self, input_data, data_type, locate_by)
 
                 if locate_by == "css":
                         for name, value in input_data.items():
@@ -179,10 +163,9 @@ class USI:
 
         # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
                 # {"checkout button": ['#menuBar', '#dropDown a'}
-        def hover_click_btn(self, elements, locate_by="css"):
-                # check_selector(locate_by)
-                if type(elements) != dict:
-                        USI._log_error(self, err={'type':"hover_click_btn accepts a dictionary of visiable and hidden elements"})
+        def hover_and_click(self, elements, locate_by="css"):
+                data_type = ["hover_and_click", dict]
+                USI._precheck_data(self, elements, data_type, locate_by)
 
                 if locate_by == "css":
                         for name, elements in elements.items():
@@ -223,23 +206,35 @@ class USI:
                         print("CTA => " + colored("Clicked", color="green"))
                 except Exception:
                         print("CTA => " + colored("Not found", color="red"))
+                        USI._element_not_located(self, name="CTA", element=selector)
 
 
         # Clicks a button when it becomes visible
-        def btn_click_when_visible(self, button, locate_by="css"):
+        def click_when_visible(self, elements, locate_by="css"):
                 # check_selector(locate_by)
-                
+                data_type = ["click_when_visible", dict]
+                USI._precheck_data(self, elements, data_type, locate_by)
+
                 if locate_by == "css":
-                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
-                        print(f"{button} clicked ")
+                        for name, value in elements.items():
+                                try:
+                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, value))).click()
+                                        print(f"{name} => ", colored("clicked", color="green"))
+                                except Exception:
+                                        USI._element_not_located(self, name=name, element=value)
                 elif locate_by == "xpath":
-                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, button))).click()
-                        print(f"{button} clicked ")
+                        for name, value in elements.items():
+                                try:
+                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, value))).click()
+                                        print(f"{name} => ", colored("clicked", color="green"))
+                                except Exception:
+                                        USI._element_not_located(self, name=name, element=value)
                 
 
         # Launches Modal: No args accepted (USI)
         def launch_modal(self):
-                self.browser.execute_script("setTimeout( () => { usi_js.display(); }, 5000);")
+                USI.halt_execution(self, sec=3)
+                self.browser.execute_script("usi_js.display();")
                 print("USI Modal => " + colored("Launched", color="green"))
 
 
@@ -266,11 +261,35 @@ class USI:
                 else:
                         cookie = self.browser.get_cookie(cookie_name)
                         session_name = cookie["value"]
-                        print(f"USI session: {session_name}")
+                        print(f"USI session: " + colored(session_name, "blue"))
+
+
+        #   Check for coupon validation
+                # Accpets a type of validate_by which can be an "element" or "message"
+                        # coupon_validation(self, validate_by="")
+        def coupon_validation(self, validate_by="", message_text="", target_element=""):
+
+                if validate_by == "element":
+                        if self.browser.find_element_by_css_selector(target_element):
+                                print("Coupon is => " + colored("Valid", color="green"))
+                        else:
+                                print("Coupon is => " + colored("In-Valid", color="red"))
+                elif validate_by == "message":
+                       self.browser.find_element_by_css_selector(target_element).text()
+
+
+        # Closes usi modal (USI)
+                # Accepts one string param if different from default
+        def close_btn(self, selector="#usi_default_close"):
+                try:
+                        self.browser.find_element_by_css_selector(selector).click()
+                        print("X Button => " + colored("Closed", "green"))
+                except Exception:
+                       USI._element_not_located(self, name="Close button", element=selector)
 
 
         # Shuts down driver 
-        def shut_down(self):
+        def shutdown(self):
                 print(colored("Shutting down driver", color="yellow"))
                 sleep(5)
                 self.browser.quit()
@@ -290,15 +309,44 @@ class USI:
 
 # Hurricane Golf TT 23220
 
-hurr_TT_23220 = USI("Hurricane Golf", "TT", "23220", driver="chrome", device_type="desktop", headless=True)
-hurr_TT_23220.initiate_test()
-hurr_TT_23220.navigate_url("https://www.hurricanegolf.com/close-out-golf-balls/titleist-pro-v1-white-golf-balls-1-dozen.html")
-hurr_TT_23220.click_btn({"Add to cart button":".button.btn-cart"}, locate_by="css")
-hurr_TT_23220.halt_execution(3)
-hurr_TT_23220.navigate_url("https://www.hurricanegolf.com/checkout/cart/")
-hurr_TT_23220.halt_execution(3)
-hurr_TT_23220.launch_modal()
-hurr_TT_23220.click_cta()
-hurr_TT_23220.shut_down()
+# hurr_TT_23220 = USI("Office-Furniture-to-go", "TT", "24586", driver="chrome", device_type="desktop", headless=True)
+# hurr_TT_23220.initiate_test()
+# hurr_TT_23220.navigate_url("https://www.officefurniture2go.com/")
+# hurr_TT_23220.click_cta()
+# hurr_TT_23220.shutdown()
+
+# ace = USI("acehardware", "TT", "78542", headless=True)
+# ace.initiate_test()
+# ace.navigate_url("https://www.acehardware.com/departments/outdoor-living/patio-furniture/patio-chairs/8296592")
+# ace.halt_execution(7)
+# ace.click({"Add to cart": "#add-to-cart"})
+# ace.click_when_visible({"Model checkout button":".checkout.modal-button"})
+# ace.append_url("usi_enable=1")
+# ace.shutdown()
 
 
+# joes_LC_23780 = USI("Joes Jeans", "TT", "23780", driver="chrome", device_type="desktop", headless=False)
+# joes_LC_23780.initiate_test()
+# joes_LC_23780.navigate_url("https://www.joesjeans.com/the-slim-fit/d/2881C1038?CategoryId=302&Sizes=38?datahound=1")
+# joes_LC_23780.launch_modal()
+# joes_LC_23780.lc_input("jduran@upsellit.com")
+# joes_LC_23780.halt_execution(3)
+# joes_LC_23780.click_cta()
+# joes_LC_23780.get_cookie("usi_sess")
+# joes_LC_23780.halt_execution(3)
+# joes_LC_23780.click_cta("#usi_content .usi_submitbutton2")
+# joes_LC_23780.shutdown()
+
+
+# hurr_golf = USI("hurricanegolf", "TT", "23780", driver="chrome", device_type="desktop", headless=False)
+# hurr_golf.initiate_test()
+# hurr_golf.navigate_url("https://www.hurricanegolf.com/close-out-golf-balls/titleist-pro-v1-white-golf-balls-1-dozen.html")
+# hurr_golf.halt_execution(5)
+# hurr_golf.click({"Add to cart":" .button.btn-cart"})
+# hurr_golf.halt_execution(5)
+# hurr_golf.navigate_url("https://www.hurricanegolf.com/checkout/cart/")
+# hurr_golf.launch_modal()
+# hurr_golf.click_cta()
+# hurr_golf.halt_execution(5)
+# hurr_golf.coupon_validation(validate_by="element", target_element=".messages .success-msg")
+# hurr_golf.shutdown()
