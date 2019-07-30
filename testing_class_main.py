@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from time import sleep
 import config  # Create & populate config.py 
@@ -210,6 +211,7 @@ class USI:
 
 
         # Clicks a button when it becomes visible
+
         def click_when_visible(self, elements, locate_by="css"):
                 # check_selector(locate_by)
                 data_type = ["click_when_visible", dict]
@@ -229,7 +231,21 @@ class USI:
                                         print(f"{name} => ", colored("clicked", color="green"))
                                 except Exception:
                                         USI._element_not_located(self, name=name, element=value)
-                
+
+
+        # Select box function 
+                # Accpets a dict of name and list of css selector & value or text
+        def select_option(self, select_data, select_by="value"):
+                for name, value in select_data.items():
+                        if select_by == "value":
+                                select = Select(self.browser.find_element_by_css_selector(value[0]))
+                                select.select_by_value(value[1])
+                                print(f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
+                        elif select_by == "text":
+                                select= Select(self.browser.find_element_by_css_selector(value[0]))
+                                select.select_by_visible_text(value[1])
+                                print(f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
+
 
         # Launches Modal: No args accepted (USI)
         def launch_modal(self):
@@ -265,28 +281,49 @@ class USI:
 
 
         #   Check for coupon validation
-                # Accpets a type of validate_by which can be an "element" or "message"
+                ''' 
+                Accpets a type of validate_by which can be an "element", "message", or
+                element_message. message & element_message must pass message_text.
+                EX. 
+                coupon_validation(validate_by="element_message", message_text='Coupon code applied.', target_element=".messages")
+                '''
                         # coupon_validation(self, validate_by="")
-        def coupon_validation(self, validate_by="", message_text="", target_element=""):
-
+        def coupon_validation(self, validate_by, target_element, message_text=""):
                 if validate_by == "element":
                         if self.browser.find_element_by_css_selector(target_element):
-                                print("Coupon is => " + colored("Valid", color="green"))
+                                print("Coupon code element => " + colored("Valid", color="green"))
                         else:
-                                print("Coupon is => " + colored("In-Valid", color="red"))
+                                print("Coupon code element => " + colored("In-Valid", color="red"))
                 elif validate_by == "message":
-                       self.browser.find_element_by_css_selector(target_element).text()
-
+                        valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
+                        if message_text == valididation_message:
+                                print("Validation message => " + colored("Valid", color="green"))
+                        else:
+                                print("Validation message => " + colored("In-Valid", color="red"))
+                elif validate_by == "element_message":
+                        valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
+                        if self.browser.find_element_by_css_selector(target_element):
+                                if message_text == valididation_message:
+                                       print("Coupon code element and validation message => " + colored("Valid", color="green"))
+                                else:
+                                        print("Validation message => " + colored("In-Valid", color="red"))
+                        else:
+                                print("Coupon code element => " + colored("In-Valid", color="red"))
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
-        def close_btn(self, selector="#usi_default_close"):
+        def close_usi_modal(self, selector="#usi_default_close"):
                 try:
-                        self.browser.find_element_by_css_selector(selector).click()
-                        print("X Button => " + colored("Closed", "green"))
+                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+                        print("Modal => " + colored("Closed", "green"))
                 except Exception:
                        USI._element_not_located(self, name="Close button", element=selector)
 
+
+        # Interacts with to page to enable launch on mobile (usi)
+        def mobile_interact(self):
+                self.browser.find_element_by_tag_name("body").click()
+                
 
         # Shuts down driver 
         def shutdown(self):
@@ -338,7 +375,7 @@ class USI:
 # joes_LC_23780.shutdown()
 
 
-# hurr_golf = USI("hurricanegolf", "TT", "23780", driver="chrome", device_type="desktop", headless=False)
+# hurr_golf = USI("hurricanegolf", "TT", "23780", driver="chrome", device_type="desktop", headless=True)
 # hurr_golf.initiate_test()
 # hurr_golf.navigate_url("https://www.hurricanegolf.com/close-out-golf-balls/titleist-pro-v1-white-golf-balls-1-dozen.html")
 # hurr_golf.halt_execution(5)
@@ -346,7 +383,17 @@ class USI:
 # hurr_golf.halt_execution(5)
 # hurr_golf.navigate_url("https://www.hurricanegolf.com/checkout/cart/")
 # hurr_golf.launch_modal()
+# hurr_golf.close_usi_modal()
 # hurr_golf.click_cta()
+# hurr_golf.input_text({"Promo code field":["#coupon_code", "TAKE5OFF"]})
+# hurr_golf.click({"Apply button": ".a-right.size-zero .button"})
 # hurr_golf.halt_execution(5)
-# hurr_golf.coupon_validation(validate_by="element", target_element=".messages .success-msg")
+# hurr_golf.coupon_validation(validate_by="element_message", message_text='Coupon code "TAKE5OFF" was applied.', target_element=".messages .success-msg span")
 # hurr_golf.shutdown()
+
+# johnst = USI("johnstonmurphy", "TT", "23780", headless=True)
+# johnst.initiate_test()
+# johnst.navigate_url("https://www.johnstonmurphy.com/copeland-chukka/8665.html")
+# johnst.halt_execution(5)
+# johnst.select_option({"Size select":[".variant-dropdown .variation-select", "8"]}, select_by="text")
+# johnst.shutdown()
