@@ -248,7 +248,6 @@ class USI:
 
         # Launches Modal: No args accepted (USI)
         def launch_modal(self):
-                USI.halt_execution(self, sec=3)
                 self.browser.execute_script("usi_js.display();")
                 print("USI Modal => " + colored("Launched", color="green"))
 
@@ -267,6 +266,33 @@ class USI:
                         page_url = self.browser.current_url + "?" + param
                 USI.navigate_url(self, page_url)
 
+
+        # checks if boostbar exists
+                # accepts one param if named different them the default
+        def boostbar_check(self, boostbar="#usi_boost_container"):
+                try:
+                        if self.browser.find_element_by_css_selector(boostbar):
+                                print("Boostbar => " + colored("Exists", "green"))
+                except Exception:
+                        USI._element_not_located(self, name="Boostbar", element="#usi_boost_container")
+
+
+        #  Checks if a tab (TT or LC) can toggle
+                # Default params should suffice, change if needed  
+        def tab_click(self, decision_class=".usi_tab_opened", tab="#usi_tab"):
+                # if self.browser.find_element_by_css_selector(tab):
+                try:
+                        USI.click_when_visible(self, elements={"USI tab":tab})
+                except Exception:
+                        USI._element_not_located(self, name="tab", element="#usi_tab")
+                
+                try:
+                        if self.browser.find_element_by_css_selector(decision_class):
+                                print("Tab => " + colored("Opened", "green"))
+                except Exception:
+                        USI._element_not_located(self, name="tab_opened class", element=".usi_tab_opened")
+                        
+                
 
         # Retrieves session cookie
                 #accepts a str of the cookie you want ot retrieve
@@ -340,5 +366,4 @@ class USI:
 
         def take_screenshot(self, screenshot_name="default.png"):
                 self.browser.save_screenshot(f"{screenshot_name}.png")
-
 
