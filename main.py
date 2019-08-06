@@ -61,12 +61,19 @@ class USI:
                         self.browser = webdriver.Firefox(executable_path=config.firefox_driver, options=firefox_options) 
 
                 elif self.driver == "safari":
+                        if self.headless == True:
+                                print(colored("Safari does not support headless mode", color="red"))
+                                sys.exit()
                         self.browser = webdriver.Safari(executable_path=config.safari_driver) 
+
+                # DOM set to poll for 15 sec 
+                self.browser.implicitly_wait(15)
 
                 # Log script info & results
                 results = colored(self.company + " " + self.campaign_type + " " + 
                 self.site_id, color="cyan") + " => " + colored("Running...", color="green")
                 print(results)
+                
 
 
         def _precheck_data(self, elements, data_type, locate_by="css"):
@@ -154,10 +161,10 @@ class USI:
 
         # Inputs email address for LC modal (USI)
                 # takes email address string and optional seconds arg
-        def lc_input(self, input_email, selector="#usi_content #usi_email_container #usi_email", sec=60):
+        def lc_input(self, email, selector="#usi_content #usi_email_container #usi_email", sec=60):
                 try:
-                        WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(input_email)
-                        print(f"{input_email} => " + colored("entered into LC", color="green"))
+                        WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
+                        print(f"{email} => " + colored("entered into LC", color="green"))
                 except Exception:
                         print(colored("LC input falied", color="red"))
 
@@ -248,6 +255,7 @@ class USI:
 
         # Launches Modal: No args accepted (USI)
         def launch_modal(self):
+                USI.halt_execution(self, sec=5)
                 self.browser.execute_script("usi_js.display();")
                 print("USI Modal => " + colored("Launched", color="green"))
 
@@ -274,7 +282,7 @@ class USI:
                         if self.browser.find_element_by_css_selector(boostbar):
                                 print("Boostbar => " + colored("Exists", "green"))
                 except Exception:
-                        USI._element_not_located(self, name="Boostbar", element="#usi_boost_container")
+                        USI._element_not_located(self, name="Boostbar", element=boostbar)
 
 
         #  Checks if a tab (TT or LC) can toggle
@@ -296,13 +304,14 @@ class USI:
 
         # Retrieves session cookie
                 #accepts a str of the cookie you want ot retrieve
-        def get_cookie(self, cookie_name):
-                if self.browser.get_cookie(cookie_name) is None:
-                        print("Could not retrieve session cookie")
+        def get_cookie(self, cookie):
+                USI.halt_execution(self, sec=3)
+                if self.browser.get_cookie(cookie) is None:
+                        print("Could not retrieve cookie")
                 else:
-                        cookie = self.browser.get_cookie(cookie_name)
-                        session_name = cookie["value"]
-                        print(f"USI session: " + colored(session_name, "blue"))
+                        cookie_name = self.browser.get_cookie(cookie)
+                        cookie_value = cookie_name["value"]
+                        print(f"{cookie}: " + colored(cookie_value, "blue"))
 
 
         #   Check for coupon validation
@@ -367,3 +376,41 @@ class USI:
         def take_screenshot(self, screenshot_name="default.png"):
                 self.browser.save_screenshot(f"{screenshot_name}.png")
 
+
+
+# hurr_golf = USI("hurricanegolf", "TT", "23780", driver="chrome", device_type="desktop", headless=True)
+# hurr_golf.initiate_test()
+# hurr_golf.navigate_url("https://www.hurricanegolf.com/close-out-golf-balls/titleist-pro-v1-white-golf-balls-1-dozen.html")
+# # hurr_golf.halt_execution(5)
+# hurr_golf.click({"Add to cart":" .button.btn-cart"})
+# # hurr_golf.halt_execution(5)
+# hurr_golf.navigate_url("https://www.hurricanegolf.com/checkout/cart/")
+# hurr_golf.launch_modal()
+# hurr_golf.close_usi_modal()
+# hurr_golf.click_cta()
+# hurr_golf.input_text({"Promo code field":["#coupon_code", "TAKE5OFF"]})
+# hurr_golf.click({"Apply button": ".a-right.size-zero .button"})
+# # hurr_golf.halt_execution(5)
+# hurr_golf.coupon_validation(validate_by="element_message", message_text='Coupon code "TAKE5OFF" was applied.', target_element=".messages .success-msg span")
+# hurr_golf.shutdown()
+
+# teleStream = USI("telestream", "TT", "25502", driver="safari", headless=True)
+# teleStream.initiate_test()
+# teleStream.navigate_url("http://www.telestream.net/wirecast/store.asp")
+# # teleStream.halt_execution(5)
+# teleStream.click({"Mac add button":"#OneMac"})
+# teleStream.launch_modal()
+# teleStream.click_cta()
+# teleStream.shutdown()
+
+joes_LC_23780 = USI("Joes Jeans", "TT", "23780", driver="chrome", device_type="desktop", headless=True)
+joes_LC_23780.initiate_test()
+joes_LC_23780.navigate_url("https://www.joesjeans.com/the-slim-fit/d/2881C1038?CategoryId=302&Sizes=38?datahound=1")
+joes_LC_23780.launch_modal()
+joes_LC_23780.lc_input("jdran@mail.com")
+# joes_LC_23780.halt_execution(3)
+joes_LC_23780.click_cta()
+joes_LC_23780.get_cookie("usi_sess")
+# joes_LC_23780.halt_execution(3)
+joes_LC_23780.click_cta("#usi_content .usi_submitbutton2")
+joes_LC_23780.shutdown()

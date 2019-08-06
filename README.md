@@ -6,11 +6,11 @@
 * Python 3 (3.6 or higher)
   * https://www.python.org/downloads/
 * Selenium WebDriver 
-  * https://www.seleniumhq.org/download/ or use pjp install selenium
+  * https://www.seleniumhq.org/download/ or use pip install selenium
 * Termcolor
   * pip install termcolor
 * Download browsers Drivers
-    * https://www.seleniumhq.org/download/ (Currently only supports Chrome, Firefox, and Safari)
+    * https://www.seleniumhq.org/download/ (Library only supports Chrome, Firefox, and Safari)
     * Safari driver can be found at /usr/bin/safaridriver
     
   
@@ -45,45 +45,58 @@ teleStream.click_cta()
 teleStream.shutdown()
 ```
  
-## Test API
+## Test API 
 
-Before writting script you must create an instance of the USI class
+Before writing webdriver actions you must create an instance of the USI class.
 ```Python
 ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False)
 ```
+* Requires company name, campaign type, site id.
+* driver can accept "chrome", "firefox", "safari"; default is set to "chrome".
+* device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only works on chrome. 
+* headless accepts a boolean of "True" or "False". False is default. Only chrome and firefox support headless.
 
 ### initiate_test()
 The initiate_test function must come immediately after creating a new instance of the USI class. This function creates all
-necessary configuration for the webdriver. 
+necessary configurations for webdriver. Script will fail without this function  
 
-#### *Example:*<br> initiate_test("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False)
-* Requires company name, campaign type, site id
-* driver can accept "chrome", "firefox", "safari"; default is set to "chrome"
-* device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only work on chrome. 
-* headless accepts a boolean of "True" or "False".
+#### *Example:*<br> 
+```Python
+initiate_test()
+```
+* No arguments required, all nessasary data should be passed after creating a new instance of the USI class.
 
 #
 
 ### navigate_url()
 The navigate_url function navigates to a specified url. 
 
-#### *Example:*<br> navigate_url("http://www.ace.com")
-* Requires a string url to be pass
+#### *Example:*<br> 
+```Python
+navigate_url("http://www.ace.com")
+```
+* Requires a string url argument.
 
 #
 
 ### click()
 The click function clicks an any specifed link, button etc.
 
-#### *Example:*<br> click({"Add to Cart Button":"#addBtn"})
-* Accepts a dictionary(object) of name of the target element & a selector
+#### *Example:*<br> 
+```Python
+click({"Add to Cart Button":"#addBtn"})
+```
+* Accepts an dictionary(Object) of a element name as a key and a selector value. Mulitple objects can be passed if clicking thorugh numerous elements. 
 
 #
 
 ### click_cta()
 The click_cta function will click a CTA button.
 
-#### *Example:*<br> click_cta(selector)
+#### *Example:*<br> 
+```Python
+click_cta(selector="#usi_content .usi_submitbutton")
+```
 * Accepts a single argument of a selector, the default selector "#usi_content .usi_submitbutton" should work in most cases.
 
 #
@@ -91,32 +104,44 @@ The click_cta function will click a CTA button.
 ### input_text()
 The input_text function inserts text into any input field.
 
-#### *Example:*<br> input_text({"Email-address": ["#formFirstname", "Johnny"]})
-* Accepts an dictionary of a "name" as a key and list of "selector" and "text" as values.
+#### *Example:*<br> 
+```Python
+input_text({"Email-address": ["#formFirstname", "Johnny"]})
+```
+* Accepts an dictionary of a element name as a key and a list of selector & text as values. Mulitple objects can be passed if needed. Such as filling out numerous input fields.
 
 #
 
 ### lc_input()
-The lc_input() function inserts an email address into an LC modal
+The lc_input() function inserts an email address into an LC modal.
 
-#### *Example:*<br> lc_input("jdran@mail.com", selector)
-* Accepts a string argument of an email address, selector can also be passed if default #usi_content #usi_email_container #usi_email is not sufficient
+#### *Example:*<br> 
+```Python
+lc_input("jdran@mail.com", selector="#usi_content #usi_email_container #usi_email")
+```
+* Accepts a string argument of an email address, selector can be passed if default "#usi_content #usi_email_container #usi_email" is not sufficient.
 
 #
 
 ### launch_modal()
-The launch_modal() function launches a usi modal whether being a TT or LC
+The launch_modal() function launches a usi modal whether being a TT or LC.
 
-#### *Example:*<br> launch_modal()
-* No arguments accepted
+#### *Example:*<br> 
+```Python
+launch_modal()
+```
+* No arguments accepted.
 
 #
 
 ### click_when_visible()
-The click_when_visible function will click on a specifed link, button, etc when it is visible in the DOM. Such as a modal launching.
+The click_when_visible function will click on a specifed link, button, etc.., when it is visible in the DOM.
 
-#### *Example:*<br> click_when_visible({"Modal checkout button":".checkout.modal-button"})
-* Accepts a dictionary(object) of name of the target element & selector
+#### *Example:*<br> 
+```Python
+click_when_visible({"Modal checkout button":".checkout.modal-button"})
+```
+* Accepts a dictionary(object) element name as a key and a selector as a value.
 
 #
 
@@ -124,38 +149,54 @@ The click_when_visible function will click on a specifed link, button, etc when 
 The select_option function selects a option from a select menu. Will only work for HTML select elements.
  
  
-#### *Example:*<br> select_option({"Size select":[".select-size", "large"]}, select_by="text")
-* Accepts a dictionary of name of select field as a key and a list of select and option. select_by accepts a arg of text or value and will search for that option; value is the default. 
+#### *Example:*<br> 
+```Python
+select_option({"Size select":[".select-size", "large"]}, select_by="text")
+```
+* Accepts two arguments of the following
+  * name of the select field as a key and a list of selector and option as values. 
+  * select_by accepts a argument of text or value and will search for that option; value is the default. 
 
 #
 
 ### append_url()
-The append_url function simply appeands a parameter to the current url and navigates to the new url;  "?" and "&" do not need to be passed.
+The append_url function appeands a parameter to the current url and navigates to the new url. Query components "?" and "&" do not need to be passed in argument.
 
-#### *Example:*<br> append_url("usi_enable=1")
-* Accepts a single string.
+#### *Example:*<br>
+```Python
+append_url("usi_enable=1")
+```
+* Accepts a single string argument.
 
 #
 
 ### coupon_validation()
-The coupon_validation function check if a coupon code is valid, by classname or string of text.
+The coupon_validation function checks if a coupon code is valid by classname or string of text.
 
-#### *Example:*<br> coupon_validation(validate_by="element_text", target_element=".coupon-valid", message_text="Promo code is valid!")
+#### *Example:*<br> 
+```Python
+coupon_validation(validate_by="element_text", target_element=".coupon-valid", message_text="Promo code is valid!")
+```
+
 * Accepts three arguments of the following
   * validate_by
-    * validate_by="element" => check for validation by an element class/id
-    * validate_by="text" => check for validation by a string of text
-    * validate_by="element_text" => check for validation by an element and string of text
+    * validate_by="element" => checks for validation by an element classname/id
+    * validate_by="text" => checks for validation by a string of text
+    * validate_by="element_text" => checks for validation by an element and string of text
   * target_element accepts a string argument of a classname or id
-  * message_text accepts a string of text to check against. Argument must be passed for validate_by text/element_text
-    
+  * message_text accepts a string of text to check against for validation. A message_text argument must be passed for validate_by text & element_text
+
+*Listing arguments name is not necessary, displayed for visualization.
 
 #
 
 ### get_cookie()
 The get_cookie function will retrieve a cookie. 
 
-#### *Example:*<br> get_cookie("USI_session")
+#### *Example:*<br> 
+```Python
+get_cookie("USI_session")
+```
 * Accepts a string of a cookie name.
 
 #
@@ -163,41 +204,56 @@ The get_cookie function will retrieve a cookie.
 ### execute_js()
 The execute_js function will execute javascript. 
 
-#### *Example:*<br> execute_js('alert("Hello World");')
+#### *Example:*<br> 
+```Python
+execute_js('alert("Hello World");')
+```
 * Accepts a string of JS code.
 
 #
 
 ### take_screenshot()
-The take_screenshot() function takes a screenshot of the screen, .png file type. 
+The take_screenshot function takes a screenshot of the screen, .png file type. 
 
-#### *Example:*<br> take_screenshot("screenshot")
-* Accepts a name of screenshot
+#### *Example:*<br> 
+```Python
+take_screenshot("screenshot_name")
+```
+* Accepts a string of the screenshot name
 
 #
 
 ### close_usi_modal()
-The close_usi_modal() function click on an X button that closes an usi modal 
+The close_usi_modal function clics on an X button that closes an usi modal 
 
-#### *Example:*<br> close_usi_modal(selector)
-* Accepts a selector if the default #usi_default_close is not sufficient
+#### *Example:*<br> 
+```Python
+close_usi_modal(selector="#usi_default_close")
+```
+* Accepts a selector if the default "#usi_default_close" is not sufficient
 
 #
 
 ### tab_click()
 The tab_click function toggles a usi TT or LC tab
 
-#### *Example:*<br> tab_click(decision_class=".usi_tab_opened", tab="#usi_tab")
+#### *Example:*<br> 
+```Python
+tab_click(decision_class=".usi_tab_opened", tab="#usi_tab")
+```
 * Accepts two default arguements
-  * decision_class checks for an exepected class after tab is clicked
-  * tab is is the default seletor for a usi modal tab but can be changed if needed.
+  * decision_class checks for an exepected classname after tab is clicked. Default ".usi_tab_opened", but can accept a different argument.
+  * tab has a default seletor of "#usi_tab" for a usi modal tab but can accept a different selector if needed.
 
 #
 
 ### boostbar_check()
 The boostbar_check function checks that a boost bar had loaded.
 
-#### *Example:*<br> boostbar_check(selector)
+#### *Example:*<br> 
+```Python
+boostbar_check(selector="#usi_boost_container")
+```
 * Accepts a selector if the default #usi_boost_container is not sufficient
 
 #
@@ -205,20 +261,29 @@ The boostbar_check function checks that a boost bar had loaded.
 ### mobile_interact()
 The mobile_interact() function interacts with mobile page to enable our backtrap to function properly
 
-#### *Example:*<br> mobile_interact()
+#### *Example:*<br> 
+```Python
+mobile_interact()
+```
 * No arguments accepted
 
 #
 
 ### halt_execution()
-The halt_execution function stop execution for a predefined amount of sleep.<br>
-*WARNING: Use with caution, a thread.sleep can be unreliable and can slow down tests. Use only as a last case scenario.
+The halt_execution function stop execution for a predefined amount of time.<br>
+*WARNING: Use with caution, a thread.sleep can be unreliable and slow down tests. All functions have a predefined 15s wait time to poll the DOM. Use only as a last case scenario.
 
-#### *Example:*<br> halt_execution(sec=5)
-* Accepts an INT argument for amount of seconds to sleep webdriver. 
+#### *Example:*<br> 
+```Python
+halt_execution(5)
+```
+* Accepts an INT argument for an amount of seconds to sleep webdriver. 
 
 ### shutdown()
-The shutdown() function gracefully shuts down the selenium webdriver. Must be added to the end of EVERY test script.
+The shutdown function gracefully shuts down the selenium webdriver. Must be added to the end of EVERY test script.
 
-#### *Example:*<br> shutdown()
+#### *Example:*<br> 
+```Python
+shutdown()
+```
 * No arguments are accepted
