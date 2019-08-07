@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import JavascriptException
 from time import sleep
 import config  # Create & populate config.py 
 from termcolor import colored
@@ -101,9 +102,9 @@ class USI:
 
 
         # terminate test 
-        def _element_not_located(self, name, element=""):
+        def _element_not_located(self, name, message="Element could not be located", element=""):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
-                print(f"{name}: {element} => " +  colored("Element could not be located", color="red"))
+                print(f"{name}: {element} => " +  colored(message, color="red"))
                 sys.exit()
 
 
@@ -123,7 +124,7 @@ class USI:
                         for name, button in buttons.items():
                                 try: 
                                         self.browser.find_element_by_css_selector(button).click()
-                                        print(f"{name} => " + colored("clicked", color="green"))
+                                        print(f"{name} => " + colored("Clicked", color="green"))
                                 except Exception:
                                         USI._element_not_located(name, button)
 
@@ -131,7 +132,7 @@ class USI:
                         for name, button in buttons.items():
                                 try: 
                                         self.browser.find_element_by_xpath(button).click()
-                                        print(f"{name} => " + colored("clicked", color="green"))
+                                        print(f"{name} => " + colored("Clicked", color="green"))
                                 except Exception:
                                         USI._element_not_located(name, button)
 
@@ -227,14 +228,14 @@ class USI:
                         for name, value in elements.items():
                                 try:
                                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, value))).click()
-                                        print(f"{name} => ", colored("clicked", color="green"))
+                                        print(f"{name} => ", colored("Clicked", color="green"))
                                 except Exception:
                                         USI._element_not_located(self, name=name, element=value)
                 elif locate_by == "xpath":
                         for name, value in elements.items():
                                 try:
                                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, value))).click()
-                                        print(f"{name} => ", colored("clicked", color="green"))
+                                        print(f"{name} => ", colored("Clicked", color="green"))
                                 except Exception:
                                         USI._element_not_located(self, name=name, element=value)
 
@@ -254,11 +255,23 @@ class USI:
 
 
         # Launches Modal: No args accepted (USI)
-        def launch_modal(self):
-                USI.halt_execution(self, sec=5)
-                self.browser.execute_script("usi_js.display();")
-                print("USI Modal => " + colored("Launched", color="green"))
-
+        def launch_modal(self, proactive=False, proactive_wait=""):
+                if proactive == False:
+                        USI.halt_execution(self, sec=5)
+                        try:
+                                self.browser.execute_script("usi_js.display();")
+                                print("USI Modal => " + colored("Launched", color="green"))
+                        except JavascriptException:
+                                USI._element_not_located(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                elif proactive == True:
+                        if proactive_wait == "" or int(proactive):
+                                USI._element_not_located(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
+                        else: 
+                                try:
+                                        self.browser.execute_script("usi_js.display();")
+                                        print("USI Modal => " + colored("Launched", color="green"))
+                                except JavascriptException:
+                                        USI._element_not_located(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
 
         # Executes any javascript code
         def execute_js(self, script):
