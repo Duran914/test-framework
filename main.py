@@ -102,7 +102,7 @@ class USI:
 
 
         # terminate test 
-        def _element_not_located(self, name, message="Element could not be located", element=""):
+        def _terminate_script(self, name, message="Element could not be located", element=""):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
                 print(f"{name}: {element} => " +  colored(message, color="red"))
                 sys.exit()
@@ -126,7 +126,7 @@ class USI:
                                         self.browser.find_element_by_css_selector(button).click()
                                         print(f"{name} => " + colored("Clicked", color="green"))
                                 except Exception:
-                                        USI._element_not_located(name, button)
+                                        USI._terminate_script(self, name=name, element=button)
 
                 elif locate_by == "xpath":
                         for name, button in buttons.items():
@@ -134,7 +134,7 @@ class USI:
                                         self.browser.find_element_by_xpath(button).click()
                                         print(f"{name} => " + colored("Clicked", color="green"))
                                 except Exception:
-                                        USI._element_not_located(name, button)
+                                        USI._terminate_script(self, name=name, element=button)
 
 
         # Input text: accepts an dict of name and selector/input 
@@ -147,16 +147,17 @@ class USI:
                         for name, value in input_data.items():
                                 try:
                                         self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
-                                        print(f'"{value[1]}" entered into {name} ')
+                                        print(f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
-                                        USI._element_not_located(name,value[0])
+                                        USI._terminate_script(name,value[0])
+                                        USI._terminate_script(self, name=name, element=value[0])
                 elif locate_by == "xpath":
                         for name, value in input_data.items():
                                 try:
                                         self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
-                                        print(f'"{value[1]}" entered into {name} ')
+                                        print(f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
-                                        USI._element_not_located(name,value[0])
+                                        USI._terminate_script(self, name=name, element=value[0])
 
 
 
@@ -167,7 +168,7 @@ class USI:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
                         print(f"{email} => " + colored("entered into LC", color="green"))
                 except Exception:
-                        print(colored("LC input falied", color="red"))
+                        USI._terminate_script(self, name="LC input field", element=selector)
 
 
         # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
@@ -181,11 +182,11 @@ class USI:
                                 try:
                                         visible_element = self.browser.find_element_by_css_selector(elements[0])
                                 except Exception:
-                                        USI._element_not_located(self, name="visible element", element=elements[0])
+                                        USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
                                         hidden_element = self.browser.find_element_by_css_selector(elements[1])
                                 except Exception:
-                                        USI._element_not_located(self,  name="hidden element",  element=elements[1])
+                                        USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
                                 print("Visible element => " + colored("Hovered", color="green"))
@@ -197,11 +198,11 @@ class USI:
                                 try:
                                         visible_element = self.browser.find_element_by_xpath(elements[0])
                                 except Exception:
-                                        USI._element_not_located(self, name="visible element", element=elements[0])
+                                        USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
                                         hidden_element = self.browser.find_element_by_xpath(elements[1])
                                 except Exception:
-                                        USI._element_not_located(self,  name="hidden element",  element=elements[1])
+                                        USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
                                 print("Visible element => " + colored("Hovered", color="green"))
@@ -215,7 +216,7 @@ class USI:
                         print("CTA => " + colored("Clicked", color="green"))
                 except Exception:
                         print("CTA => " + colored("Not found", color="red"))
-                        USI._element_not_located(self, name="CTA", element=selector)
+                        USI._terminate_script(self, name="CTA", element=selector)
 
 
         # Clicks a button when it becomes visible
@@ -230,14 +231,14 @@ class USI:
                                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, value))).click()
                                         print(f"{name} => ", colored("Clicked", color="green"))
                                 except Exception:
-                                        USI._element_not_located(self, name=name, element=value)
+                                        USI._terminate_script(self, name=name, element=value)
                 elif locate_by == "xpath":
                         for name, value in elements.items():
                                 try:
                                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, value))).click()
                                         print(f"{name} => ", colored("Clicked", color="green"))
                                 except Exception:
-                                        USI._element_not_located(self, name=name, element=value)
+                                        USI._terminate_script(self, name=name, element=value)
 
 
         # Select box function 
@@ -262,20 +263,25 @@ class USI:
                                 self.browser.execute_script("usi_js.display();")
                                 print("USI Modal => " + colored("Launched", color="green"))
                         except JavascriptException:
-                                USI._element_not_located(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                                USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
                 elif proactive == True:
                         if proactive_wait == "" or int(proactive):
-                                USI._element_not_located(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
+                                USI._terminate_script(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
                         else: 
                                 try:
                                         self.browser.execute_script("usi_js.display();")
                                         print("USI Modal => " + colored("Launched", color="green"))
                                 except JavascriptException:
-                                        USI._element_not_located(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                                        USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
 
         # Executes any javascript code
-        def execute_js(self, script):
-                self.browser.execute_script(script)
+        def execute_js(self, script, name="JS code"):
+                USI.halt_execution(self, sec=5)
+                try:
+                        self.browser.execute_script(script)
+                        print(f"{name} => " + colored("Executed", color="green"))
+                except JavascriptException:
+                        USI._terminate_script(self, name=name, message="Execution failed", element=script)
 
 
         # Appends string url parameters
@@ -295,7 +301,7 @@ class USI:
                         if self.browser.find_element_by_css_selector(boostbar):
                                 print("Boostbar => " + colored("Exists", "green"))
                 except Exception:
-                        USI._element_not_located(self, name="Boostbar", element=boostbar)
+                        USI._terminate_script(self, name="Boostbar", element=boostbar)
 
 
         #  Checks if a tab (TT or LC) can toggle
@@ -305,13 +311,13 @@ class USI:
                 try:
                         USI.click_when_visible(self, elements={"USI tab":tab})
                 except Exception:
-                        USI._element_not_located(self, name="tab", element="#usi_tab")
+                        USI._terminate_script(self, name="tab", element="#usi_tab")
                 
                 try:
                         if self.browser.find_element_by_css_selector(decision_class):
                                 print("Tab => " + colored("Opened", "green"))
                 except Exception:
-                        USI._element_not_located(self, name="tab_opened class", element=".usi_tab_opened")
+                        USI._terminate_script(self, name="tab_opened class", element=".usi_tab_opened")
                         
                 
 
@@ -337,25 +343,30 @@ class USI:
                         # coupon_validation(self, validate_by="")
         def coupon_validation(self, validate_by, target_element, message_text=""):
                 if validate_by == "element":
-                        if self.browser.find_element_by_css_selector(target_element):
-                                print("Coupon code element => " + colored("Valid", color="green"))
-                        else:
-                                print("Coupon code element => " + colored("In-Valid", color="red"))
+                        try:
+                                if self.browser.find_element_by_css_selector(target_element):
+                                        print("Coupon code element => " + colored("Valid", color="green"))
+                        except Exception:
+                                        USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
                 elif validate_by == "message":
                         valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
-                        if message_text == valididation_message:
-                                print("Validation message => " + colored("Valid", color="green"))
-                        else:
-                                print("Validation message => " + colored("In-Valid", color="red"))
+                        try:
+                                if message_text == valididation_message:
+                                        print("Validation message => " + colored("Valid", color="green"))
+                        except Exception:
+                                        USI._terminate_script(self, name="Coupon Message", element=target_element, message="In-valid validation message")
                 elif validate_by == "element_message":
                         valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
-                        if self.browser.find_element_by_css_selector(target_element):
+                        try:
+                                self.browser.find_element_by_css_selector(target_element)
+                        except Exception:
+                                USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
+                        
+                        try:
                                 if message_text == valididation_message:
-                                       print("Coupon code element and validation message => " + colored("Valid", color="green"))
-                                else:
-                                        print("Validation message => " + colored("In-Valid", color="red"))
-                        else:
-                                print("Coupon code element => " + colored("In-Valid", color="red"))
+                                        print("Coupon code element and validation message => " + colored("Valid", color="green"))
+                        except Exception:
+                                USI._terminate_script(self, name="Coupon Message", element=target_element, message="In-valid validation message")
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
@@ -364,7 +375,7 @@ class USI:
                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                         print("Modal => " + colored("Closed", "green"))
                 except Exception:
-                       USI._element_not_located(self, name="Close button", element=selector)
+                       USI._terminate_script(self, name="Close button", element=selector)
 
 
         # Interacts with to page to enable launch on mobile (usi)
@@ -388,5 +399,4 @@ class USI:
 
         def take_screenshot(self, screenshot_name="default.png"):
                 self.browser.save_screenshot(f"{screenshot_name}.png")
-
 

@@ -44,7 +44,24 @@ teleStream.launch_modal()
 teleStream.click_cta()
 teleStream.shutdown()
 ```
- 
+
+#### Succesful Test Output
+A succesful test script will display a green Test Complete message.
+![Succesful Demo](https://raw.githubusercontent.com/Duran914/images/master/demo_tt.png?token=AFDBGESDAGPFL7QKYVC7CXC5JRI6Y)
+
+
+#### Fail Test Output
+A test script will terminate if an error is thrown.
+Possible Errors Include:
+  * Elements that could not be located. 
+  * Passing incorrect data types.
+  * Missing Arguments.
+  * Incorrect driver instantiation.
+  * Campaign launch rules not being met.
+  * Selenium errors. 
+
+![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_failed.png?token=AFDBGEREZ22WH7IOOYTGVWS5JRJB2)
+
 ## Test API 
 
 Before writing webdriver actions you must create an instance of the USI class.
@@ -54,7 +71,7 @@ ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desk
 * Requires company name, campaign type, site id.
 * driver can accept "chrome", "firefox", "safari"; default is set to "chrome".
 * device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only works on chrome. 
-* headless accepts a boolean of "True" or "False". False is default. Only chrome and firefox support headless.
+* headless accepts a boolean of "True" or "False"; default is False. Only chrome and firefox support headless.
 
 ### initiate_test()
 The initiate_test function must come immediately after creating a new instance of the USI class. This function creates all
@@ -97,7 +114,7 @@ The click_cta function will click a CTA button.
 ```Python
 click_cta(selector="#usi_content .usi_submitbutton")
 ```
-* Accepts a single argument of a selector, the default selector "#usi_content .usi_submitbutton" should work in most cases.
+* Accepts a single argument of a selector, the default selector is "#usi_content .usi_submitbutton" should work in most cases.
 
 #
 
@@ -155,7 +172,7 @@ select_option({"Size select":[".select-size", "large"]}, select_by="text")
 ```
 * Accepts two arguments of the following
   * name of the select field as a key and a list of selector and option as values. 
-  * select_by accepts a argument of text or value and will search for that option; value is the default. 
+  * select_by accepts a argument of text or value and will search for that option; "value" is the default. 
 
 #
 
@@ -206,9 +223,10 @@ The execute_js function will execute javascript.
 
 #### *Example:*<br> 
 ```Python
-execute_js('alert("Hello World");')
+execute_js('alert("Hello World");', "Alert box for hello world")
 ```
 * Accepts a string of JS code.
+* An optional string argument of name can be passed to specify what the javascript's intended action is. Default will be "JS code"
 
 #
 
@@ -254,7 +272,7 @@ The boostbar_check function checks that a boost bar had loaded.
 ```Python
 boostbar_check(selector="#usi_boost_container")
 ```
-* Accepts a selector if the default #usi_boost_container is not sufficient
+* Accepts a selector if the default "#usi_boost_container" is not sufficient
 
 #
 
