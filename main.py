@@ -36,7 +36,7 @@ class USI:
                         USI._log_error(self, err={
                                 "value": f"{self.device_type} is an invalid device type. Set device type: desktop or mobile"
                                 })
-
+                global chrome_options
                 chrome_options = ChromeOptions()
                 firefox_options = FirefoxOptions()
 
@@ -332,7 +332,6 @@ class USI:
                         cookie_value = cookie_name["value"]
                         print(f"{cookie}: " + colored(cookie_value, "blue"))
 
-
         #   Check for coupon validation
                 ''' 
                 Accpets a type of validate_by which can be an "element", "message", or
@@ -342,31 +341,39 @@ class USI:
                 '''
                         # coupon_validation(self, validate_by="")
         def coupon_validation(self, validate_by, target_element, message_text=""):
-                if validate_by == "element":
-                        try:
-                                if self.browser.find_element_by_css_selector(target_element):
-                                        print("Coupon code element => " + colored("Valid", color="green"))
-                        except Exception:
-                                        USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
-                elif validate_by == "message":
+                try:
+                        if self.browser.find_element_by_css_selector(target_element):
+                                print("Coupon code element => " + colored("Valid", color="green"))
+                except Exception:
+                        USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
+
+
+                if validate_by == "message" or validate_by == "element_message":
                         valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
-                        try:
-                                if message_text == valididation_message:
-                                        print("Validation message => " + colored("Valid", color="green"))
-                        except Exception:
-                                        USI._terminate_script(self, name="Coupon Message", element=target_element, message="In-valid validation message")
-                elif validate_by == "element_message":
-                        valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
-                        try:
-                                self.browser.find_element_by_css_selector(target_element)
-                        except Exception:
-                                USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
-                        
-                        try:
-                                if message_text == valididation_message:
-                                        print("Coupon code element and validation message => " + colored("Valid", color="green"))
-                        except Exception:
-                                USI._terminate_script(self, name="Coupon Message", element=target_element, message="In-valid validation message")
+
+                        if message_text == valididation_message:
+                                print("Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                        else:
+                                USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Scraped validation message: {valididation_message}")
+
+        def session_errors(self, session="dh_MSLr1565289912611", chrome_profile="/Users/jonathanduran/Library/Application Support/Google/Chrome/Default", upsellit_email="jduran@upsellit.com"):
+                if self.browser.get_cookie(session) is None:
+                        print("Could not retrieve session")
+                else:
+                        session_name = self.browser.get_cookie(session)
+                        session_value = session_name["value"]
+                        print(f"{session}: " + colored(session_value, "blue"))
+
+                chrome_options.add_argument(chrome_profile)
+                USI.navigate_url(self, f"https://www2.upsellit.com/admin/control/edit/session_search.jsp?sessionID={session}")
+
+                # Login if needed
+                if self.browser.find_element_by_css_selector(".has-info #email"):
+                        USI.input_text(self, {"Upsellit login":[".has-info #email", upsellit_email]})
+                
+                # Scrape Admin for red errors
+                
+
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
@@ -386,7 +393,7 @@ class USI:
         # Shuts down driver 
         def shutdown(self):
                 print(colored("Shutting down driver", color="yellow"))
-                sleep(5)
+                sleep(3)
                 self.browser.quit()
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
                 print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored("All Tests Passed ", color="green"))
