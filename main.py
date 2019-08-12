@@ -274,6 +274,7 @@ class USI:
                                 except JavascriptException:
                                         USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
 
+
         # Executes any javascript code
         def execute_js(self, script, name="JS code"):
                 USI.halt_execution(self, sec=5)
@@ -332,6 +333,7 @@ class USI:
                         cookie_value = cookie_name["value"]
                         print(f"{cookie}: " + colored(cookie_value, "blue"))
 
+
         #   Check for coupon validation
                 ''' 
                 Accpets a type of validate_by which can be an "element", "message", or
@@ -356,24 +358,6 @@ class USI:
                         else:
                                 USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Scraped validation message: {valididation_message}")
 
-        def session_errors(self, session="dh_MSLr1565289912611", chrome_profile="/Users/jonathanduran/Library/Application Support/Google/Chrome/Default", upsellit_email="jduran@upsellit.com"):
-                if self.browser.get_cookie(session) is None:
-                        print("Could not retrieve session")
-                else:
-                        session_name = self.browser.get_cookie(session)
-                        session_value = session_name["value"]
-                        print(f"{session}: " + colored(session_value, "blue"))
-
-                chrome_options.add_argument(chrome_profile)
-                USI.navigate_url(self, f"https://www2.upsellit.com/admin/control/edit/session_search.jsp?sessionID={session}")
-
-                # Login if needed
-                if self.browser.find_element_by_css_selector(".has-info #email"):
-                        USI.input_text(self, {"Upsellit login":[".has-info #email", upsellit_email]})
-                
-                # Scrape Admin for red errors
-                
-
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
@@ -389,6 +373,16 @@ class USI:
         def mobile_interact(self):
                 self.browser.find_element_by_tag_name("body").click()
                 
+        
+        # Takes screenshot
+        def take_screenshot(self, screenshot_name="default.png"):
+                self.browser.save_screenshot(f"{screenshot_name}.png")
+
+
+        # Halts execution of script (last case scenario)
+        def halt_execution(self, sec):
+                sleep(sec)
+
 
         # Shuts down driver 
         def shutdown(self):
@@ -397,13 +391,4 @@ class USI:
                 self.browser.quit()
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
                 print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored("All Tests Passed ", color="green"))
-
-
-        # Halts execution of script (last case scenario)
-        def halt_execution(self, sec):
-                sleep(sec)
-
-
-        def take_screenshot(self, screenshot_name="default.png"):
-                self.browser.save_screenshot(f"{screenshot_name}.png")
 

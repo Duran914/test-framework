@@ -47,10 +47,10 @@ teleStream.shutdown()
 
 #### Succesful Test Output
 A succesful test script will display a green Test Complete message.
-![Succesful Demo](https://raw.githubusercontent.com/Duran914/images/master/demo_tt.png?token=AFDBGESDAGPFL7QKYVC7CXC5JRI6Y)
+![Succesful Demo](https://raw.githubusercontent.com/Duran914/images/master/demo_tt.png)
 
 
-#### Fail Test Output
+#### Failed Test Output
 A test script will terminate if an error is thrown.
 Possible Errors Include:
   * Elements that could not be located. 
@@ -60,7 +60,7 @@ Possible Errors Include:
   * Campaign launch rules not being met.
   * Selenium errors. 
 
-![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_failed.png?token=AFDBGEREZ22WH7IOOYTGVWS5JRJB2)
+![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_failed.png)
 
 ## Test API 
 
@@ -103,7 +103,7 @@ The click function clicks an any specifed link, button etc.
 ```Python
 click({"Add to Cart Button":"#addBtn"})
 ```
-* Accepts an dictionary(Object) of a element name as a key and a selector value. Mulitple objects can be passed if clicking thorugh numerous elements. 
+* Accepts an dictionary (Object) of a element name as a key and a selector value. Mulitple objects can be passed if clicking thorugh numerous elements. 
 
 #
 
@@ -114,7 +114,7 @@ The click_cta function will click a CTA button.
 ```Python
 click_cta(selector="#usi_content .usi_submitbutton")
 ```
-* Accepts a single argument of a selector, the default selector is "#usi_content .usi_submitbutton" should work in most cases.
+* Accepts a single argument of a selector, the default selector is "#usi_content .usi_submitbutton".
 
 #
 
@@ -201,7 +201,7 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
     * validate_by="text" => checks for validation by a string of text
     * validate_by="element_text" => checks for validation by an element and string of text
   * target_element accepts a string argument of a classname or id
-  * message_text accepts a string of text to check against for validation. A message_text argument must be passed for validate_by text & element_text
+  * message_text accepts a string of text to check against for validation. A message_text argument must be passed when validating by text & element_text
 
 *Listing arguments name is not necessary, displayed for visualization.
 
@@ -242,7 +242,7 @@ take_screenshot("screenshot_name")
 #
 
 ### close_usi_modal()
-The close_usi_modal function clics on an X button that closes an usi modal 
+The close_usi_modal function clicks on an X button that closes an usi modal 
 
 #### *Example:*<br> 
 ```Python
