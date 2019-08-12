@@ -1,5 +1,5 @@
 # Test Automation Library 
-### Library for generating automating UI tests for Campaigns. 
+### Library for generating automated UI tests for Campaigns. 
 
 ## Requirements
 
@@ -97,13 +97,13 @@ navigate_url("http://www.ace.com")
 #
 
 ### click()
-The click function clicks an any specifed link, button etc.
+The click function clicks on any specifed link, button etc.
 
 #### *Example:*<br> 
 ```Python
 click({"Add to Cart Button":"#addBtn"})
 ```
-* Accepts an dictionary (Object) of a element name as a key and a selector value. Mulitple objects can be passed if clicking thorugh numerous elements. 
+* Accepts a dictionary (Object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking thorugh numerous elements. 
 
 #
 
@@ -136,7 +136,7 @@ The lc_input() function inserts an email address into an LC modal.
 ```Python
 lc_input("jdran@mail.com", selector="#usi_content #usi_email_container #usi_email")
 ```
-* Accepts a string argument of an email address, selector can be passed if default "#usi_content #usi_email_container #usi_email" is not sufficient.
+* Accepts a string argument of an email address, default is "#usi_content #usi_email_container #usi_email".
 
 #
 
@@ -158,7 +158,7 @@ The click_when_visible function will click on a specifed link, button, etc.., wh
 ```Python
 click_when_visible({"Modal checkout button":".checkout.modal-button"})
 ```
-* Accepts a dictionary(object) element name as a key and a selector as a value.
+* Accepts a dictionary(object) of an element name as a key and a selector as a value.
 
 #
 
@@ -172,7 +172,7 @@ select_option({"Size select":[".select-size", "large"]}, select_by="text")
 ```
 * Accepts two arguments of the following
   * name of the select field as a key and a list of selector and option as values. 
-  * select_by accepts a argument of text or value and will search for that option; "value" is the default. 
+  * select_by accepts a argument of text or value and will scrape the dom based that option; "value" is the default. 
 
 #
 
@@ -197,11 +197,11 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 
 * Accepts three arguments of the following
   * validate_by
-    * validate_by="element" => checks for validation by an element classname/id
-    * validate_by="text" => checks for validation by a string of text
-    * validate_by="element_text" => checks for validation by an element and string of text
+    * validate_by="element" checks for validation by an element classname/id
+    * validate_by="text" checks for validation by a string of text
+    * validate_by="element_text" checks for validation by an element and string of text
   * target_element accepts a string argument of a classname or id
-  * message_text accepts a string of text to check against for validation. A message_text argument must be passed when validating by text & element_text
+  * message_text accepts a string of text to check against for validation. A message_text argument must be passed when validating by text or element_text
 
 *Listing arguments name is not necessary, displayed for visualization.
 
@@ -226,7 +226,7 @@ The execute_js function will execute javascript.
 execute_js('alert("Hello World");', "Alert box for hello world")
 ```
 * Accepts a string of JS code.
-* An optional string argument of name can be passed to specify what the javascript's intended action is. Default will be "JS code"
+* An optional string argument of name can be passed to specify what the javascript's code intended action is. Default will be "JS code"
 
 #
 
@@ -242,13 +242,13 @@ take_screenshot("screenshot_name")
 #
 
 ### close_usi_modal()
-The close_usi_modal function clicks on an X button that closes an usi modal 
+The close_usi_modal function closes a usi modal 
 
 #### *Example:*<br> 
 ```Python
 close_usi_modal(selector="#usi_default_close")
 ```
-* Accepts a selector if the default "#usi_default_close" is not sufficient
+* Accepts a string argument of selector,  default is "#usi_default_close".
 
 #
 
@@ -266,18 +266,18 @@ tab_click(decision_class=".usi_tab_opened", tab="#usi_tab")
 #
 
 ### boostbar_check()
-The boostbar_check function checks that a boost bar had loaded.
+The boostbar_check function checks if a boost bar has loaded.
 
 #### *Example:*<br> 
 ```Python
 boostbar_check(selector="#usi_boost_container")
 ```
-* Accepts a selector if the default "#usi_boost_container" is not sufficient
+* Accepts a string argument of selector, default "#usi_boost_container" is not sufficient
 
 #
 
 ### mobile_interact()
-The mobile_interact() function interacts with mobile page to enable our backtrap to function properly
+The mobile_interact function interacts with a mobile page to enable our backtrap to function properly
 
 #### *Example:*<br> 
 ```Python
@@ -288,7 +288,7 @@ mobile_interact()
 #
 
 ### halt_execution()
-The halt_execution function stop execution for a predefined amount of time.<br>
+The halt_execution function stops execution for a predefined amount of time.<br>
 *WARNING: Use with caution, a thread.sleep can be unreliable and slow down tests. All functions have a predefined 15s wait time to poll the DOM. Use only as a last case scenario.
 
 #### *Example:*<br> 
