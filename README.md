@@ -9,8 +9,8 @@
   * https://www.seleniumhq.org/download/ or use pip install selenium
 * Termcolor
   * pip install termcolor
-* Download browsers Drivers
-    * https://www.seleniumhq.org/download/ (Library only supports Chrome, Firefox, and Safari)
+* Download browser drivers
+    * https://www.seleniumhq.org/download/ (Library currently supports Chrome, Firefox, and Safari)
     * Safari driver can be found at /usr/bin/safaridriver
     
   
@@ -64,7 +64,7 @@ Possible Errors Include:
 
 ## Test API 
 
-Before writing webdriver actions you must create an instance of the USI class.
+Before writing a test script you must create an instance of the USI class for EVERY campaign.
 ```Python
 ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False)
 ```
@@ -75,13 +75,13 @@ ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desk
 
 ### initiate_test()
 The initiate_test function must come immediately after creating a new instance of the USI class. This function creates all
-necessary configurations for webdriver. Script will fail without this function  
+necessary configurations for webdriver. Script will fail without this function.  
 
 #### *Example:*<br> 
 ```Python
 initiate_test()
 ```
-* No arguments required, all nessasary data should be passed after creating a new instance of the USI class.
+* No arguments required, all nessasary data will be passed after creating a new instance of the USI class.
 
 #
 
@@ -103,7 +103,7 @@ The click function clicks on any specifed link, button etc.
 ```Python
 click({"Add to Cart Button":"#addBtn"})
 ```
-* Accepts a dictionary (Object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking thorugh numerous elements. 
+* Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking thorugh numerous elements. 
 
 #
 
@@ -125,12 +125,12 @@ The input_text function inserts text into any input field.
 ```Python
 input_text({"Email-address": ["#formFirstname", "Johnny"]})
 ```
-* Accepts an dictionary of a element name as a key and a list of selector & text as values. Mulitple objects can be passed if needed. Such as filling out numerous input fields.
+* Accepts an dictionary (object) of a element name as a key and an array of selector & text as values. Mulitple objects can be passed if needed, such as filling out numerous input fields.
 
 #
 
 ### lc_input()
-The lc_input() function inserts an email address into an LC modal.
+The lc_input function inserts an email address into an LC modal.
 
 #### *Example:*<br> 
 ```Python
@@ -141,7 +141,7 @@ lc_input("jdran@mail.com", selector="#usi_content #usi_email_container #usi_emai
 #
 
 ### launch_modal()
-The launch_modal() function launches a usi modal whether being a TT or LC.
+The launch_modal function launches a usi TT or LC modal. 
 
 #### *Example:*<br> 
 ```Python
@@ -158,12 +158,12 @@ The click_when_visible function will click on a specifed link, button, etc.., wh
 ```Python
 click_when_visible({"Modal checkout button":".checkout.modal-button"})
 ```
-* Accepts a dictionary(object) of an element name as a key and a selector as a value.
+* Accepts a dictionary (object) of an element name as a key and a selector as a value.
 
 #
 
 ### select_option()
-The select_option function selects a option from a select menu. Will only work for HTML select elements.
+The select_option function selects an option from a select menu. Will only work for HTML select elements.
  
  
 #### *Example:*<br> 
@@ -171,7 +171,7 @@ The select_option function selects a option from a select menu. Will only work f
 select_option({"Size select":[".select-size", "large"]}, select_by="text")
 ```
 * Accepts two arguments of the following
-  * name of the select field as a key and a list of selector and option as values. 
+  * name of the select field as a key and an array of selector and option as values. 
   * select_by accepts a argument of text or value and will scrape the dom based that option; "value" is the default. 
 
 #
@@ -197,11 +197,11 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 
 * Accepts three arguments of the following
   * validate_by
-    * validate_by="element" checks for validation by an element classname/id
-    * validate_by="text" checks for validation by a string of text
-    * validate_by="element_text" checks for validation by an element and string of text
-  * target_element accepts a string argument of a classname or id
-  * message_text accepts a string of text to check against for validation. A message_text argument must be passed when validating by text or element_text
+    * validate_by="element" checks for validation by an element selector.
+    * validate_by="text" checks for validation by a string of text.
+    * validate_by="element_text" checks for validation by an element selector and string of text.
+  * target_element accepts a string argument of a selector.
+  * message_text accepts a string of text to check validation.  An argument must be passed when validating by "text" or "element_text".
 
 *Listing arguments name is not necessary, displayed for visualization.
 
@@ -214,7 +214,7 @@ The get_cookie function will retrieve a cookie.
 ```Python
 get_cookie("USI_session")
 ```
-* Accepts a string of a cookie name.
+* Accepts a single string argument of a cookie name.
 
 #
 
@@ -272,7 +272,7 @@ The boostbar_check function checks if a boost bar has loaded.
 ```Python
 boostbar_check(selector="#usi_boost_container")
 ```
-* Accepts a string argument of selector, default "#usi_boost_container" is not sufficient
+* Accepts a string argument of selector, default is "#usi_boost_container".
 
 #
 
