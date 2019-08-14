@@ -104,12 +104,20 @@ class USI:
         # terminate test 
         def _terminate_script(self, name, message="Element could not be located", element=""):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
-                print(f"{name}: {element} => " +  colored(message, color="red"))
+                if element == "":
+                        print(f"{name} => " +  colored(message, color="red"))
+                else:
+                        print(f"{name}: {element} => " +  colored(message, color="red"))
                 sys.exit()
 
 
         # Navigates to url: Accepts 1 string argmuent
         def navigate_url(self, url):
+                try:
+                        self.browser
+                except Exception:
+                        USI._terminate_script(self, name="initiate_test()", message="USI class instantiation falied")
+
                 self.browser.get(url)
                 print("Navigating to => " + colored(url, color="blue"))
 
