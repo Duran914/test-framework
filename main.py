@@ -22,7 +22,7 @@ class USI:
                 self.driver = driver
                 self.device_type = device_type
                 self.headless = headless
-                
+
         # output campaign info and pass/fail. (will log test to a txt later)
         def initiate_test(self):
                 self.driver = self.driver.lower()
@@ -75,7 +75,7 @@ class USI:
                 self.site_id, color="cyan") + " => " + colored("Running...", color="green")
                 print(results)
                 
-
+        
 
         def _precheck_data(self, elements, data_type, locate_by="css"):
                 allowed_locator = {"xpath", "css"}
@@ -172,6 +172,10 @@ class USI:
         # Inputs email address for LC modal (USI)
                 # takes email address string and optional seconds arg
         def lc_input(self, email, selector="#usi_content #usi_email_container #usi_email", sec=60):
+                data_type = ["lc_input", str]
+                USI._precheck_data(self, selector, data_type)
+                USI._precheck_data(self, email, data_type)
+
                 try:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
                         print(f"{email} => " + colored("entered into LC", color="green"))
@@ -219,6 +223,8 @@ class USI:
 
         # Submit Button Click: Accepts css selector or default value will be used (USI)
         def click_cta(self, selector="#usi_content .usi_submitbutton"):
+                data_type = ["click_cta", str]
+                USI._precheck_data(self, selector, data_type)
                 try:
                         WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                         print("CTA => " + colored("Clicked", color="green"))
@@ -252,6 +258,9 @@ class USI:
         # Select box function 
                 # Accpets a dict of name and list of css selector & value or text
         def select_option(self, select_data, select_by="value"):
+                data_type = ["checkbox", dict]
+                USI._precheck_data(self, select_data, data_type)
+
                 for name, value in select_data.items():
                         if select_by == "value":
                                 select = Select(self.browser.find_element_by_css_selector(value[0]))
@@ -264,7 +273,7 @@ class USI:
 
 
         # Launches Modal: No args accepted (USI)
-        def launch_modal(self, proactive=False, proactive_wait=""):
+        def launch_modal(self, proactive=False, sec=""):
                 if proactive == False:
                         USI.halt_execution(self, sec=5)
                         try:
@@ -273,18 +282,22 @@ class USI:
                         except JavascriptException:
                                 USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
                 elif proactive == True:
-                        if proactive_wait == "" or int(proactive):
+                        if sec == "":
                                 USI._terminate_script(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
                         else: 
+                                USI.halt_execution(self, sec=5)
                                 try:
-                                        self.browser.execute_script("usi_js.display();")
+                                        self.browser.find_element_by_css_selector(".usi_display.usi_show_css")
                                         print("USI Modal => " + colored("Launched", color="green"))
-                                except JavascriptException:
-                                        USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                                except Exception:
+                                        USI._terminate_script(self, name="USI Modal", message="Proactive Launch conditions not met", element=".usi_display")
 
 
         # Executes any javascript code
         def execute_js(self, script, name="JS code"):
+                data_type = ["execute_js", str]
+                USI._precheck_data(self, script, data_type)
+
                 USI.halt_execution(self, sec=5)
                 try:
                         self.browser.execute_script(script)
@@ -295,6 +308,9 @@ class USI:
 
         # Appends string url parameters
         def append_url(self, param):
+                data_type = ["append_url", str]
+                USI._precheck_data(self, param, data_type)
+
                 page_url = ""
                 if '?' in self.browser.current_url:
                         page_url = self.browser.current_url + "&" + param
@@ -306,6 +322,9 @@ class USI:
         # checks if boostbar exists
                 # accepts one param if named different them the default
         def boostbar_check(self, boostbar="#usi_boost_container"):
+                data_type = ["boostbar_check", str]
+                USI._precheck_data(self, boostbar, data_type)
+
                 try:
                         if self.browser.find_element_by_css_selector(boostbar):
                                 print("Boostbar => " + colored("Exists", "green"))
@@ -315,15 +334,18 @@ class USI:
 
         #  Checks if a tab (TT or LC) can toggle
                 # Default params should suffice, change if needed  
-        def tab_click(self, decision_class=".usi_tab_opened", tab="#usi_tab"):
-                # if self.browser.find_element_by_css_selector(tab):
+        def tab_click(self, decision_selector=".usi_tab_opened", tab="#usi_tab"):
+                data_type = ["tab_click", str]
+                USI._precheck_data(self, decision_selector, data_type)
+                USI._precheck_data(self, tab, data_type)
+
                 try:
                         USI.click_when_visible(self, elements={"USI tab":tab})
                 except Exception:
                         USI._terminate_script(self, name="tab", element="#usi_tab")
                 
                 try:
-                        if self.browser.find_element_by_css_selector(decision_class):
+                        if self.browser.find_element_by_css_selector(decision_selector):
                                 print("Tab => " + colored("Opened", "green"))
                 except Exception:
                         USI._terminate_script(self, name="tab_opened class", element=".usi_tab_opened")
@@ -333,6 +355,9 @@ class USI:
         # Retrieves session cookie
                 #accepts a str of the cookie you want ot retrieve
         def get_cookie(self, cookie):
+                data_type = ["get_cookie", str]
+                USI._precheck_data(self, cookie, data_type)
+
                 USI.halt_execution(self, sec=3)
                 if self.browser.get_cookie(cookie) is None:
                         print("Could not retrieve cookie")
@@ -351,6 +376,11 @@ class USI:
                 '''
                         # coupon_validation(self, validate_by="")
         def coupon_validation(self, validate_by, target_element, message_text=""):
+                data_type = ["coupon_validation", str]
+                USI._precheck_data(self, validate_by, data_type)
+                USI._precheck_data(self, target_element, data_type)
+                USI._precheck_data(self, message_text, data_type)
+
                 try:
                         if self.browser.find_element_by_css_selector(target_element):
                                 print("Coupon code element => " + colored("Valid", color="green"))
@@ -369,17 +399,51 @@ class USI:
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
-        def close_usi_modal(self, selector="#usi_default_close"):
-                try:
-                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
-                        print("Modal => " + colored("Closed", "green"))
-                except Exception:
-                       USI._terminate_script(self, name="Close button", element=selector)
+        def close_usi_modal(self, selector="#usi_default_close", locate_by="css"):
+                data_type = ["checkbox", str]
+                USI._precheck_data(self, selector, data_type, locate_by)
+
+                if locate_by == "css":
+                        try:
+                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+                                print("Modal => " + colored("Closed", "green"))
+                        except Exception:
+                                USI._terminate_script(self, name="Close button", element=selector)
+                if locate_by == "xpath":
+                        try:
+                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, selector))).click()
+                                print("Modal => " + colored("Closed", "green"))
+                        except Exception:
+                                USI._terminate_script(self, name="Close button", element=selector)
 
 
         # Interacts with to page to enable launch on mobile (usi)
         def mobile_interact(self):
                 self.browser.find_element_by_tag_name("body").click()
+
+
+        def refresh_page(self):
+                self.browser.refresh()
+
+        #checkbox_data
+        def checkbox(self, checkbox_data="", locate_by="css"):
+                data_type = ["checkbox", dict]
+                USI._precheck_data(self, checkbox_data, data_type, locate_by)
+
+                if locate_by == "css":
+                        for name, selector in checkbox_data.items():
+                                try:
+                                        self.browser.find_element_by_css_selector(selector).click()
+                                        print(f"{name} => {selector} " + colored("Checked", "green"))
+                                except Exception:
+                                        USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
+                elif locate_by == "xpath":
+                        for name, selector in checkbox_data.items():
+                                try:
+                                        self.browser.find_element_by_xpath(selector).click()
+                                        print(f"{name} => {selector} " + colored("Checked", "green"))
+                                except Exception:
+                                        USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
                 
         
         # Takes screenshot

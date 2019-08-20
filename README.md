@@ -257,10 +257,10 @@ The tab_click function toggles a usi TT or LC tab
 
 #### *Example:*<br> 
 ```Python
-tab_click(decision_class=".usi_tab_opened", tab="#usi_tab")
+tab_click(decision_selector=".usi_tab_opened", tab="#usi_tab")
 ```
 * Accepts two default arguements
-  * decision_class checks for an exepected classname after tab is clicked. Default ".usi_tab_opened", but can accept a different argument.
+  * decision_selector checks for an exepected classname/id after a tab is clicked. Default ".usi_tab_opened", but can accept a different argument.
   * tab has a default seletor of "#usi_tab" for a usi modal tab but can accept a different selector if needed.
 
 #
