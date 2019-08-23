@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import JavascriptException
-from time import sleep
+from time import sleep, time
 import config  # Create & populate config.py 
 from termcolor import colored
 import sys
@@ -25,6 +25,8 @@ class USI:
 
         # output campaign info and pass/fail. (will log test to a txt later)
         def initiate_test(self):
+                global start_time
+                start_time = time()
                 self.driver = self.driver.lower()
                 self.device_type = self.device_type.lower()
                 available_browsers = {"chrome", "firefox", "safari"}
@@ -458,9 +460,10 @@ class USI:
 
         # Shuts down driver 
         def shutdown(self):
+                complete_time = round((time() - start_time), 1)
                 print(colored("Shutting down driver", color="yellow"))
                 sleep(3)
                 self.browser.quit()
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
-                print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored("All Tests Passed ", color="green"))
+                print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored(f"All Tests Passed ({complete_time}s)", color="green"))
 
