@@ -175,8 +175,9 @@ class USI:
                 # takes email address string and optional seconds arg
         def lc_input(self, email, selector="#usi_content #usi_email_container #usi_email", sec=60):
                 data_type = ["lc_input", str]
-                USI._precheck_data(self, selector, data_type)
-                USI._precheck_data(self, email, data_type)
+                validate_items = [selector, email]
+                for item in validate_items:
+                        USI._precheck_data(self, item, data_type)
 
                 try:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
@@ -338,8 +339,9 @@ class USI:
                 # Default params should suffice, change if needed  
         def tab_click(self, decision_selector=".usi_tab_opened", tab="#usi_tab"):
                 data_type = ["tab_click", str]
-                USI._precheck_data(self, decision_selector, data_type)
-                USI._precheck_data(self, tab, data_type)
+                validate_items = [decision_selector, tab]
+                for item in validate_items:
+                        USI._precheck_data(self, item, data_type)
 
                 try:
                         USI.click_when_visible(self, elements={"USI tab":tab})
@@ -379,9 +381,10 @@ class USI:
                         # coupon_validation(self, validate_by="")
         def coupon_validation(self, validate_by, target_element, message_text=""):
                 data_type = ["coupon_validation", str]
-                USI._precheck_data(self, validate_by, data_type)
-                USI._precheck_data(self, target_element, data_type)
-                USI._precheck_data(self, message_text, data_type)
+                validate_items = [validate_by, target_element, message_text]
+                for item in validate_items:
+                        USI._precheck_data(self, item, data_type)
+
 
                 try:
                         if self.browser.find_element_by_css_selector(target_element):
@@ -419,6 +422,23 @@ class USI:
                                 USI._terminate_script(self, name="Close button", element=selector)
 
 
+        def usi_email_link(self, cookie, element_xpath):
+                data_type = ["get_cookie", str]
+                USI._precheck_data(self, cookie, data_type)
+
+                sleep(3)
+                if self.browser.get_cookie(cookie) is None:
+                        print("Could not retrieve cookie")
+                else:
+                        cookie_name = self.browser.get_cookie(cookie)
+                        cookie_value = cookie_name["value"]
+                        print(f"{cookie}: " + colored(cookie_value, "blue"))
+
+                sleep(5)
+                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{cookie_value}~1")
+                USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
+
+
         # Interacts with to page to enable launch on mobile (usi)
         def mobile_interact(self):
                 self.browser.find_element_by_tag_name("body").click()
@@ -426,6 +446,7 @@ class USI:
 
         def refresh_page(self):
                 self.browser.refresh()
+                print("Page refeshed")
 
         #checkbox_data
         def checkbox(self, checkbox_data="", locate_by="css"):
