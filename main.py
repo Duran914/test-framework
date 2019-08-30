@@ -422,21 +422,35 @@ class USI:
                                 USI._terminate_script(self, name="Close button", element=selector)
 
 
-        def usi_email_link(self, cookie, element_xpath):
-                data_type = ["get_cookie", str]
-                USI._precheck_data(self, cookie, data_type)
+        # Open an email in a broswer window which can be use to check email links are working 
+                #Accepts two strings of session name and element xpath for the email element (xpath MUST be used here).
+                        #  usi_email_link(self, 
+                        #       session="usi_sess_27176_739_1567110133125", 
+                        #       element_xpath="")
+        def usi_email_link(self, session, element_xpath):
+                data_type = ["usi_email_link", str]
+                validate_items = [session, element_xpath]
+                for item in validate_items:
+                        USI._precheck_data(self, item, data_type)
 
                 sleep(3)
-                if self.browser.get_cookie(cookie) is None:
-                        print("Could not retrieve cookie")
+                if self.browser.get_cookie(session) is None:
+                        print("Could not retrieve session")
                 else:
-                        cookie_name = self.browser.get_cookie(cookie)
-                        cookie_value = cookie_name["value"]
-                        print(f"{cookie}: " + colored(cookie_value, "blue"))
+                        session_name = self.browser.get_cookie(session)
+                        session_value = session_name["session"]
+                        print(f"{session}: " + colored(session_value, "blue"))
 
                 sleep(5)
-                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{cookie_value}~1")
-                USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
+                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{session}~1")
+
+                if self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
+                        USI._terminate_script(self, name="Email url", element=session, message="Session not found")
+
+                try:
+                        USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
+                except Exception:
+                        USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
 
 
         # Interacts with to page to enable launch on mobile (usi)
