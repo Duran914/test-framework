@@ -104,14 +104,24 @@ class USI:
 
 
         # terminate test 
-        def _terminate_script(self, name, message="Element could not be located", element=""):
+        def _terminate_script(self, name, message="Element could not be located", element="", fail_pass=False):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
-                if element == "":
+                if fail_pass == True:
+                        print(f"{name}: {element} => " +  colored(message, color="yellow"))
+                elif element == "":
                         print(f"{name} => " +  colored(message, color="red"))
                 else:
                         print(f"{name}: {element} => " +  colored(message, color="red"))
                 sys.exit()
 
+        def _retrive_cookie(self, cookie):
+                sleep(2)
+                if self.browser.get_cookie(cookie) is None:
+                        print("Could not retrieve cookie")
+                else:
+                        cookie_name = self.browser.get_cookie(cookie)
+                        cookie_value = cookie_name["value"]
+                        return cookie_value
 
         # Navigates to url: Accepts 1 string argmuent
         def navigate_url(self, url):
@@ -369,7 +379,7 @@ class USI:
                         cookie_name = self.browser.get_cookie(cookie)
                         cookie_value = cookie_name["value"]
                         print(f"{cookie}: " + colored(cookie_value, "blue"))
-
+        
 
         #   Check for coupon validation
                 ''' 
@@ -385,7 +395,7 @@ class USI:
                 for item in validate_items:
                         USI._precheck_data(self, item, data_type)
 
-
+                sleep(5)
                 try:
                         if self.browser.find_element_by_css_selector(target_element):
                                 print("Coupon code element => " + colored("Valid", color="green"))
@@ -433,16 +443,8 @@ class USI:
                 for item in validate_items:
                         USI._precheck_data(self, item, data_type)
 
-                sleep(3)
-                if self.browser.get_cookie(session) is None:
-                        print("Could not retrieve session")
-                else:
-                        session_name = self.browser.get_cookie(session)
-                        session_value = session_name["session"]
-                        print(f"{session}: " + colored(session_value, "blue"))
-
                 sleep(5)
-                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{session}~1")
+                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{USI._retrive_cookie(self, cookie=session)}~1")
 
                 if self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
                         USI._terminate_script(self, name="Email url", element=session, message="Session not found")
@@ -453,16 +455,34 @@ class USI:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
 
 
+        # Checks a split test result, test will terminate as a no pass/fail is result is Control Group
+                # split_test_check(self, dice_roll="usi_dice_roll27248")
+                # naming convention is normally as such usi_dice_roll27248, double check app file. 
+        def split_test_check(self, dice_roll):
+                sleep(5)
+                data_type = ["split_test_check", str]
+                USI._precheck_data(self, dice_roll, data_type)
+                
+                if USI._retrive_cookie(self, cookie=dice_roll) == "0" or USI._retrive_cookie(self, cookie=dice_roll) == None:
+                        USI._terminate_script(self, name="Split test", element=dice_roll, message="Control group", fail_pass=True)
+                else:   
+                        print("Split Group: " + colored("USI" , color="green"))
+                        pass
+
+
         # Interacts with to page to enable launch on mobile (usi)
         def mobile_interact(self):
                 self.browser.find_element_by_tag_name("body").click()
 
 
+        # Simply refeshes a page
         def refresh_page(self):
                 self.browser.refresh()
                 print("Page refeshed")
 
-        #checkbox_data
+
+        # checkbox_data is used to click a checkbox 
+
         def checkbox(self, checkbox_data="", locate_by="css"):
                 data_type = ["checkbox", dict]
                 USI._precheck_data(self, checkbox_data, data_type, locate_by)
