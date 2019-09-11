@@ -107,10 +107,13 @@ class USI:
         def _terminate_script(self, name, message="Element could not be located", element="", fail_pass=False):
                 print(colored("--------------------------Test Failed----------------------------------", color="red"))
                 if fail_pass == True:
+                        print(colored("--------------------------Test Aborted----------------------------------", color="yellow"))
                         print(f"{name}: {element} => " +  colored(message, color="yellow"))
                 elif element == "":
+                        print(colored("--------------------------Test Failed----------------------------------", color="red"))
                         print(f"{name} => " +  colored(message, color="red"))
                 else:
+                        print(colored("--------------------------Test Failed----------------------------------", color="red"))
                         print(f"{name}: {element} => " +  colored(message, color="red"))
                 sys.exit()
 
@@ -235,15 +238,17 @@ class USI:
 
 
         # Submit Button Click: Accepts css selector or default value will be used (USI)
-        def click_cta(self, selector="#usi_content .usi_submitbutton"):
+        def click_cta(self, selector="#usi_content .usi_submitbutton", clicks=1):
                 data_type = ["click_cta", str]
                 USI._precheck_data(self, selector, data_type)
-                try:
-                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
-                        print("CTA => " + colored("Clicked", color="green"))
-                except Exception:
-                        print("CTA => " + colored("Not found", color="red"))
-                        USI._terminate_script(self, name="CTA", element=selector)
+
+                for _ in range(clicks):
+                        try:
+                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+                                print("CTA => " + colored("Clicked", color="green"))
+                        except Exception:
+                                print("CTA => " + colored("Not found", color="red"))
+                                USI._terminate_script(self, name="CTA", element=selector)
 
 
         # Clicks a button when it becomes visible
@@ -445,15 +450,19 @@ class USI:
 
                 sleep(5)
                 USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{USI._retrive_cookie(self, cookie=session)}~1")
-
-                if self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
-                        USI._terminate_script(self, name="Email url", element=session, message="Session not found")
+                
+                tries = 3 # will try to refresh page 3 times to load email in broswer 
+                while self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
+                        USI.refresh_page(self)
+                        tries -= 1
+                        if tries == 0:
+                                USI._terminate_script(self, name="Email url", element=session, message="Session not found")
 
                 try:
                         USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
                 except Exception:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
-
+               
 
         # Checks a split test result, test will terminate as a no pass/fail is result is Control Group
                 # split_test_check(self, dice_roll="usi_dice_roll27248")
@@ -522,3 +531,4 @@ class USI:
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
                 print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored(f"All Tests Passed ({complete_time}s)", color="green"))
 
+                
