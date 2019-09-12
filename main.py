@@ -105,7 +105,6 @@ class USI:
 
         # terminate test 
         def _terminate_script(self, name, message="Element could not be located", element="", fail_pass=False):
-                print(colored("--------------------------Test Failed----------------------------------", color="red"))
                 if fail_pass == True:
                         print(colored("--------------------------Test Aborted----------------------------------", color="yellow"))
                         print(f"{name}: {element} => " +  colored(message, color="yellow"))
@@ -442,7 +441,7 @@ class USI:
                         #  usi_email_link(self, 
                         #       session="usi_sess_27176_739_1567110133125", 
                         #       element_xpath="")
-        def usi_email_link(self, session, element_xpath):
+        def email_link_follow(self, session, element_xpath):
                 data_type = ["usi_email_link", str]
                 validate_items = [session, element_xpath]
                 for item in validate_items:
@@ -462,7 +461,9 @@ class USI:
                         USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
                 except Exception:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
-               
+
+                self.browser.switch_to.window(self.browser.window_handles[1])
+
 
         # Checks a split test result, test will terminate as a no pass/fail is result is Control Group
                 # split_test_check(self, dice_roll="usi_dice_roll27248")
@@ -531,4 +532,3 @@ class USI:
                 print(colored("---------------------------Test Complete-----------------------------", color="green"))
                 print(colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + colored(f"All Tests Passed ({complete_time}s)", color="green"))
 
-                

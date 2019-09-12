@@ -112,9 +112,11 @@ The click_cta function will click a CTA button.
 
 #### *Example:*<br> 
 ```Python
-click_cta(selector="#usi_content .usi_submitbutton")
+click_cta(selector="#usi_content .usi_submitbutton", clicks=1)
 ```
-* Accepts a single argument of a selector, the default selector is "#usi_content .usi_submitbutton".
+* Accepts two argument of a selector and click 
+  * selector accepts a string of a CTA css selector; has a default selector of "#usi_content .usi_submitbutton".
+  * click accepts a number argument of desired amount of times to click a CTA.  Has a default value of 1, a different value is only necessary if a cta needs to be clicked more then once and shares the same selector value.
 
 #
 
@@ -204,6 +206,29 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
   * message_text accepts a string of text to check validation.  An argument must be passed when validating by "text" or "element_text".
 
 *Listing arguments name is not necessary, displayed for visualization.
+
+#
+
+### split_test_check()
+The split_test_check function determines if a split test campaign is "USI" or "CONTROL". Script will abort if split test is control group,
+
+#### *Example:*<br> 
+```Python
+split_test_check(dice_roll="usi_dice_roll27248")
+```
+* Accepts on string argument of dice_roll name. Naming convension for dice roll is follows; usi_dice_roll{site id}
+
+#
+
+### email_link_follow()
+The email_link_check function opens a LC or PC email and clicks on a specified element by XPATH.
+```Python
+usi_email_link(session="usi_sess", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a")
+```
+* Accepts two string arguments.
+  * session accepts a string argument of the cookie name of the desired session.
+  * element_path accpets a string argument of the desired element to click on and follow back to site. Must use an xpath selector as
+our mjml email templetes do not have classnames or ids.
 
 #
 
