@@ -25,13 +25,14 @@
     ```
     
 
-### Running a Test 
+### Running a test script
 Create a new test script.
 Open a terminal and run test as follows. 
 ```Python
 python3 my_first_test.py
 ```
-### Example of a simple TT test
+
+#### Sample TT test
 ```Python
 #### Alwyas import main ####
 import main
@@ -43,6 +44,31 @@ teleStream.click({"Mac add button":"#OneMac"})
 teleStream.launch_modal()
 teleStream.click_cta()
 teleStream.shutdown()
+```
+
+#### Running multiple tests
+If two or more tests need to be ran in the same file; each
+test must be wrapped in a try/execpt block.
+```Python
+
+# Test Name 1 
+try:
+        teleStream_tt_25502 = main.USI("Telestream", "TT", "25502", driver="chrome")
+        teleStream_tt_25502.initiate_test()
+        teleStream_tt_25502.navigate_url("http://www.telestream.net/wirecast/store.asp")
+        teleStream_tt_25502.click({"Add to cart button":"#OneMac"})
+        teleStream_tt_25502.launch_modal()
+        teleStream_tt_25502.click_cta()
+        teleStream_tt_25502.shutdown()
+except BaseException:
+        pass
+
+# Test Name 2 
+try:
+        ...
+        ...
+except BaseException:
+        pass
 ```
 
 #### Succesful Test Output
@@ -115,8 +141,8 @@ The click_cta function will click a CTA button.
 click_cta(selector="#usi_content .usi_submitbutton", clicks=1)
 ```
 * Accepts two argument of a selector and click 
-  * selector accepts a string of a CTA css selector; has a default selector of "#usi_content .usi_submitbutton".
-  * click accepts a number argument of desired amount of times to click a CTA.  Has a default value of 1, a different value is only necessary if a cta needs to be clicked more then once and shares the same selector value.
+  * selector accepts a string of a css selector; has a default selector of "#usi_content .usi_submitbutton".
+  * clicks accepts a number argument of a desired amount of times to click a CTA.  Has a default value of 1, a different value is only necessary when a cta needs to be clicked more then once and shares the same selector value.
 
 #
 
@@ -216,7 +242,7 @@ The split_test_check function determines if a split test campaign is "USI" or "C
 ```Python
 split_test_check(dice_roll="usi_dice_roll27248")
 ```
-* Accepts on string argument of dice_roll name. Naming convension for dice roll is follows; usi_dice_roll{site id}
+* Accepts on string argument of the dice_roll cookie name. Naming convention for dice roll is as follows; usi_dice_roll{site id}
 
 #
 
@@ -321,6 +347,8 @@ The halt_execution function stops execution for a predefined amount of time.<br>
 halt_execution(5)
 ```
 * Accepts an INT argument for an amount of seconds to sleep webdriver. 
+
+#
 
 ### shutdown()
 The shutdown function gracefully shuts down the selenium webdriver. Must be added to the end of EVERY test script.

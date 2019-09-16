@@ -114,6 +114,7 @@ class USI:
                 else:
                         print(colored("--------------------------Test Failed----------------------------------", color="red"))
                         print(f"{name}: {element} => " +  colored(message, color="red"))
+                print("\n")
                 sys.exit()
 
         def _retrive_cookie(self, cookie):
@@ -488,7 +489,7 @@ class USI:
         # Simply refeshes a page
         def refresh_page(self):
                 self.browser.refresh()
-                print("Page refeshed")
+                print(colored("Page refreshed", color="blue"))
 
 
         # checkbox_data is used to click a checkbox 
