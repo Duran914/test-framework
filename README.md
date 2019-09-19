@@ -32,6 +32,7 @@ Open a terminal and run test as follows.
 python3 my_first_test.py
 ```
 
+
 #### Sample TT test
 ```Python
 #### Alwyas import main ####
@@ -88,16 +89,23 @@ Possible Errors Include:
 
 ![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_failed.png)
 
+
+### Log file output 
+* When a test has failed, a txt file named QA_Errors_{current_date}.txt will be created.
+* The log file will contain the same output as a failed test output would in the terminal.
+* Log file writting can be toggled within initiate_test() while developing a test script. 
+
 ## Test API 
 
 Before writing a test script you must create an instance of the USI class for EVERY campaign.
 ```Python
-ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False)
+ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False, log_file=True)
 ```
 * Requires company name, campaign type, site id.
 * driver can accept "chrome", "firefox", "safari"; default is set to "chrome".
 * device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only works on chrome. 
 * headless accepts a boolean of "True" or "False"; default is False. Only chrome and firefox support headless.
+* log_file will write errors to a log file. Accepts a boolean of true or false. Default is set to True.
 
 ### initiate_test()
 The initiate_test function must come immediately after creating a new instance of the USI class. This function creates all

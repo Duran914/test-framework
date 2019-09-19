@@ -27,6 +27,7 @@ class USI:
                 self.log_file = log_file
                 self.error_report = error_report
 
+
         # output campaign info and pass/fail. (will log test to a txt later)
         def initiate_test(self):
                 global start_time
@@ -107,6 +108,8 @@ class USI:
                                 print(message)
 
 
+        # logger handles all prints statementsto the terminal. 
+        # Also doubles as a function to log error to a log file if _terminate test is executed. 
         def _logger(self, message="", log_to_file="False"):
                 if message != "":
                         print(message)
@@ -125,7 +128,7 @@ class USI:
                                         log.write(f"{file_msg}\n")
 
 
-        # terminate test 
+        # terminates a test
         def _terminate_script(self, name, message="Element could not be located", element="", fail_pass=False):
                 if fail_pass == True:
                         USI._logger(self, message=colored("--------------------------Test Aborted----------------------------------", color="yellow") +
@@ -139,6 +142,8 @@ class USI:
                 USI._logger(self, message="\n")
                 sys.exit()
 
+
+        # Internal function to return a cookie value
         def _retrive_cookie(self, cookie):
                 sleep(2)
                 if self.browser.get_cookie(cookie) is None:
@@ -147,6 +152,7 @@ class USI:
                         cookie_name = self.browser.get_cookie(cookie)
                         cookie_value = cookie_name["value"]
                         return cookie_value
+
 
         # Navigates to url: Accepts 1 string argmuent
         def navigate_url(self, url):
@@ -436,7 +442,7 @@ class USI:
                         if message_text == valididation_message:
                                 USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
                         else:
-                                USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Scraped validation message: {valididation_message}")
+                                USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
 
 
         # Closes usi modal (USI)
@@ -556,3 +562,4 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
+                
