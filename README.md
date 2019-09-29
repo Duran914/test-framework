@@ -1,5 +1,5 @@
-# Test Automation Library 
-### Library for generating automated UI tests for Campaigns. 
+# Test Framework
+### Framework for generating automated UI tests for Campaigns. 
 
 ## Requirements
 
@@ -10,7 +10,7 @@
 * Termcolor
   * pip install termcolor
 * Download browser drivers
-    * https://www.seleniumhq.org/download/ (Library currently supports Chrome, Firefox, and Safari)
+    * https://www.seleniumhq.org/download/ (Framework currently supports Chrome, Firefox, and Safari)
     * Safari driver can be found at /usr/bin/safaridriver
     
   
