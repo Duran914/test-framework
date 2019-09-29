@@ -137,7 +137,7 @@ The click function clicks on any specifed link, button etc.
 ```Python
 click({"Add to Cart Button":"#addBtn"})
 ```
-* Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking thorugh numerous elements. 
+* Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
 
 #
 
@@ -172,12 +172,14 @@ The lc_input function inserts an email address into an LC modal.
 ```Python
 lc_input("jdran@mail.com", selector="#usi_content #usi_email_container #usi_email")
 ```
-* Accepts a string argument of an email address, default is "#usi_content #usi_email_container #usi_email".
+* Requires a string argument of an email address 
+* Accpets a default argument of a selector, default is "#usi_content #usi_email_container #usi_email" and should
+for most LCs.
 
 #
 
 ### launch_modal()
-The launch_modal function launches a usi TT or LC modal. 
+The launch_modal function launches an usi TT or LC modal. 
 
 #### *Example:*<br> 
 ```Python
@@ -204,11 +206,11 @@ The select_option function selects an option from a select menu. Will only work 
  
 #### *Example:*<br> 
 ```Python
-select_option({"Size select":[".select-size", "large"]}, select_by="text")
+select_option(select_data={"Size select":[".select-size", "large"]}, select_by="text")
 ```
 * Accepts two arguments of the following
-  * name of the select field as a key and an array of selector and option as values. 
-  * select_by accepts a argument of text or value and will scrape the dom based that option; "value" is the default. 
+  * select_data requires a dictionary of a name of the select field as a key and an array of selector and value beening scraped for. 
+  * select_by accepts a argument of text or value and will scrape the dom based on the innerHTML of the field or its value atrribute; "value" is the default. 
 
 #
 
@@ -224,7 +226,7 @@ append_url("usi_enable=1")
 #
 
 ### coupon_validation()
-The coupon_validation function checks if a coupon code is valid by classname or string of text.
+The coupon_validation function checks if a coupon code is valid.
 
 #### *Example:*<br> 
 ```Python
@@ -239,12 +241,10 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
   * target_element accepts a string argument of a selector.
   * message_text accepts a string of text to check validation.  An argument must be passed when validating by "text" or "element_text".
 
-*Listing arguments name is not necessary, displayed for visualization.
-
 #
 
 ### split_test_check()
-The split_test_check function determines if a split test campaign is "USI" or "CONTROL". Script will abort if split test is control group,
+The split_test_check function determines if a split test campaign is "USI" or "CONTROL". Script will abort if split test is control group.
 
 #### *Example:*<br> 
 ```Python
@@ -261,8 +261,7 @@ usi_email_link(session="usi_sess", element_xpath="/html/body/table/tbody/tr/td/t
 ```
 * Accepts two string arguments.
   * session accepts a string argument of the cookie name of the desired session.
-  * element_path accpets a string argument of the desired element to click on and follow back to site. Must use an xpath selector as
-our mjml email templetes do not have classnames or ids.
+  * element_path accpets a string argument of the desired element to click on and follow back to website. Must use an xpath selector as our mjml email templetes do not have classnames or ids.
 
 #
 
@@ -273,7 +272,7 @@ The get_cookie function will retrieve a cookie.
 ```Python
 get_cookie("USI_session")
 ```
-* Accepts a single string argument of a cookie name.
+* Requires a single string argument of a cookie name.
 
 #
 
@@ -284,7 +283,7 @@ The execute_js function will execute javascript.
 ```Python
 execute_js('alert("Hello World");', "Alert box for hello world")
 ```
-* Accepts a string of JS code.
+* Requires a string of JS code.
 * An optional string argument of name can be passed to specify what the javascript's code intended action is. Default will be "JS code"
 
 #
@@ -325,7 +324,7 @@ tab_click(decision_selector=".usi_tab_opened", tab="#usi_tab")
 #
 
 ### boostbar_check()
-The boostbar_check function checks if a boost bar has loaded.
+The boostbar_check function checks if a boost bar has launched.
 
 #### *Example:*<br> 
 ```Python
@@ -336,7 +335,7 @@ boostbar_check(selector="#usi_boost_container")
 #
 
 ### mobile_interact()
-The mobile_interact function interacts with a mobile page to enable our backtrap to function properly
+The mobile_interact function interacts with a mobile page to enable our backtrap to function properly on Chrome
 
 #### *Example:*<br> 
 ```Python

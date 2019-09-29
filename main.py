@@ -115,7 +115,7 @@ class USI:
                         print(message)
                         self.error_report.append(message)
 
-                # self.log_file is always True unless specified differently in inisitate_test()
+                # self.log_file is always True unless specified differently in initiate_test()
                 # log_to_file can only be True is _termiate_script results in a failed test
                 if self.log_file == True and log_to_file == True:
                         # if log_to_file == True:
