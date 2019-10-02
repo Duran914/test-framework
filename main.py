@@ -222,7 +222,7 @@ class USI:
 
                 try:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
-                        USI._logger(self, message=f"{email} => " + colored("entered into LC", color="green"))
+                        USI._logger(self, message=f"LC modal: {email} => " + colored("Entered into LC", color="green"))
                 except Exception:
                         USI._terminate_script(self, name="LC input field", element=selector)
 
@@ -470,21 +470,29 @@ class USI:
                         #  usi_email_link(self, 
                         #       session="usi_sess_27176_739_1567110133125", 
                         #       element_xpath="")
-        def email_link_follow(self, session, element_xpath):
+        def email_link_follow(self, campaign_type, element_xpath, override_session_name=""):
                 data_type = ["usi_email_link", str]
-                validate_items = [session, element_xpath]
+                validate_items = [campaign_type, element_xpath]
+                
                 for item in validate_items:
                         USI._precheck_data(self, item, data_type)
 
+                if campaign_type.lower() == "lc":
+                        cookie_session_name = "usi_sess"
+                elif campaign_type.lower() == "pc":
+                        cookie_session_name = "USI_Session"
+                elif override_session_name != "":
+                        cookie_session_name == override_session_name
+     
                 sleep(5)
-                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{USI._retrive_cookie(self, cookie=session)}~1")
+                USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{USI._retrive_cookie(self, cookie=cookie_session_name)}~1")
                 
                 tries = 3 # will try to refresh page 3 times to load email in broswer 
                 while self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
                         USI.refresh_page(self)
                         tries -= 1
                         if tries == 0:
-                                USI._terminate_script(self, name="Email url", element=session, message="Session not found")
+                                USI._terminate_script(self, name="Email url", element=campaign_type, message="Session not found")
 
                 try:
                         USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
@@ -562,4 +570,3 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
-                

@@ -257,11 +257,12 @@ split_test_check(dice_roll="usi_dice_roll27248")
 ### email_link_follow()
 The email_link_check function opens a LC or PC email and clicks on a specified element by XPATH.
 ```Python
-usi_email_link(session="usi_sess", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a")
+usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a", override_session_name="")
 ```
-* Accepts two string arguments.
-  * session accepts a string argument of the cookie name of the desired session.
+* Accepts three string arguments.
+  * campaign_type accepts a string argument of either "lc" or "pc".
   * element_path accpets a string argument of the desired element to click on and follow back to website. Must use an xpath selector as our mjml email templetes do not have classnames or ids.
+  * override_session_name accepts an optional argument of a session's cookie name if they're not using their conventional session names.
 
 #
 
