@@ -422,28 +422,45 @@ class USI:
                 coupon_validation(validate_by="element_message", message_text='Coupon code applied.', target_element=".messages")
                 '''
                         # coupon_validation(self, validate_by="")
-        def coupon_validation(self, validate_by, target_element, message_text=""):
+        def coupon_validation(self, validate_by, target_element, message_text="", locate_by="css"):
                 data_type = ["coupon_validation", str]
                 validate_items = [validate_by, target_element, message_text]
                 for item in validate_items:
                         USI._precheck_data(self, item, data_type)
 
                 sleep(5)
-                try:
-                        if self.browser.find_element_by_css_selector(target_element):
-                                USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
-                except Exception:
-                        USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
+
+                if locate_by == "css":
+                        try:
+                                if self.browser.find_element_by_css_selector(target_element):
+                                        USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
+                        except Exception:
+                                USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
 
 
-                if validate_by == "message" or validate_by == "element_message":
-                        valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
+                        if validate_by == "message" or validate_by == "element_message":
+                                valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
 
-                        if message_text == valididation_message:
-                                USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
-                        else:
-                                USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
+                                if message_text == valididation_message:
+                                        USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                else:
+                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
+               
+                if locate_by == "xpath":
+                        try:
+                                if self.browser.find_element_by_xpath(target_element):
+                                        USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
+                        except Exception:
+                                USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
 
+
+                        if validate_by == "message" or validate_by == "element_message":
+                                valididation_message = self.browser.find_element_by_xpath(target_element).get_attribute("innerHTML")
+
+                                if message_text == valididation_message:
+                                        USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                else:
+                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
@@ -470,7 +487,7 @@ class USI:
                         #  usi_email_link(self, 
                         #       session="usi_sess_27176_739_1567110133125", 
                         #       element_xpath="")
-        def email_link_follow(self, campaign_type, element_xpath, override_session_name=""):
+        def email_link_follow(self, campaign_type, element_xpath, override_session_name="", new_window=True):
                 data_type = ["usi_email_link", str]
                 validate_items = [campaign_type, element_xpath]
                 
@@ -490,6 +507,7 @@ class USI:
                 tries = 3 # will try to refresh page 3 times to load email in broswer 
                 while self.browser.find_element_by_css_selector("head > title").get_attribute("innerHTML") == "Oops, email has expired":
                         USI.refresh_page(self)
+                        sleep(3)
                         tries -= 1
                         if tries == 0:
                                 USI._terminate_script(self, name="Email url", element=campaign_type, message="Session not found")
@@ -499,7 +517,9 @@ class USI:
                 except Exception:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
 
-                self.browser.switch_to.window(self.browser.window_handles[1])
+                # In the event of an email link missing a target="_blank" attribute; set new_window argument to false
+                if new_window == True:
+                        self.browser.switch_to.window(self.browser.window_handles[1])
 
 
         # Checks a split test result, test will terminate as a no pass/fail is result is Control Group

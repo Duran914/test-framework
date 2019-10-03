@@ -135,9 +135,26 @@ The click function clicks on any specifed link, button etc.
 
 #### *Example:*<br> 
 ```Python
-click({"Add to Cart Button":"#addBtn"})
+click({"Add to Cart Button":"#addBtn"}, locate_by="css")
 ```
-* Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
+* Accepts two arguements
+  * Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default
+
+
+#
+
+### hover_and_click()
+The hover_and_click function hovers over any specifed element and clicks the desired element once is appears.
+
+#### *Example:*<br> 
+```Python
+hover_and_click({"checkout button": ['#menuBar', '#dropDown a'}, locate_by="css")
+```
+* Accepts two arguements
+  * A dictionary (object) of a element name as a key and an array of the visible element selector and the non-visible selector.
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default
+
 
 #
 
@@ -148,7 +165,7 @@ The click_cta function will click a CTA button.
 ```Python
 click_cta(selector="#usi_content .usi_submitbutton", clicks=1)
 ```
-* Accepts two argument of a selector and click 
+* Accepts two argument of a selector and clicks 
   * selector accepts a string of a css selector; has a default selector of "#usi_content .usi_submitbutton".
   * clicks accepts a number argument of a desired amount of times to click a CTA.  Has a default value of 1, a different value is only necessary when a cta needs to be clicked more then once and shares the same selector value.
 
@@ -159,9 +176,11 @@ The input_text function inserts text into any input field.
 
 #### *Example:*<br> 
 ```Python
-input_text({"Email-address": ["#formFirstname", "Johnny"]})
+input_text({"Email-address": ["#formFirstname", "Johnny"]}, locate_by="css")
 ```
-* Accepts an dictionary (object) of a element name as a key and an array of selector & text as values. Mulitple objects can be passed if needed, such as filling out numerous input fields.
+* Accepts two arguements
+  * A dictionary (object) of a element name as a key and an array of selector & text as values. Mulitple objects can be passed if needed, such as filling out numerous input fields.
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default
 
 #
 
@@ -230,16 +249,17 @@ The coupon_validation function checks if a coupon code is valid.
 
 #### *Example:*<br> 
 ```Python
-coupon_validation(validate_by="element_text", target_element=".coupon-valid", message_text="Promo code is valid!")
+coupon_validation(validate_by="element_text", target_element=".coupon-valid", message_text="Promo code is valid!", locate_by="css")
 ```
 
-* Accepts three arguments of the following
+* Accepts four arguments of the following
   * validate_by
     * validate_by="element" checks for validation by an element selector.
     * validate_by="text" checks for validation by a string of text.
     * validate_by="element_text" checks for validation by an element selector and string of text.
   * target_element accepts a string argument of a selector.
   * message_text accepts a string of text to check validation.  An argument must be passed when validating by "text" or "element_text".
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default
 
 #
 
@@ -257,12 +277,13 @@ split_test_check(dice_roll="usi_dice_roll27248")
 ### email_link_follow()
 The email_link_check function opens a LC or PC email and clicks on a specified element by XPATH.
 ```Python
-usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a", override_session_name="")
+usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a", override_session_name="", new_window=True)
 ```
-* Accepts three string arguments.
+* Accepts four string arguments.
   * campaign_type accepts a string argument of either "lc" or "pc".
   * element_path accpets a string argument of the desired element to click on and follow back to website. Must use an xpath selector as our mjml email templetes do not have classnames or ids.
   * override_session_name accepts an optional argument of a session's cookie name if they're not using their conventional session names.
+  * new_window accepts an optional argument of true or false, should only be "False" when an email link is missing a target="_blank" attribute.
 
 #
 
@@ -366,3 +387,4 @@ The shutdown function gracefully shuts down the selenium webdriver. Must be adde
 shutdown()
 ```
 * No arguments are accepted
+
