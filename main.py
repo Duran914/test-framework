@@ -14,6 +14,7 @@ from termcolor import colored
 import sys
 from datetime import date
 import re
+import platform
 
 
 class USI:
@@ -49,13 +50,16 @@ class USI:
  
                 # Mobile execution (Chrome only)
                 if self.device_type == "mobile" and self.driver == "chrome":
-                        mobile_emulation = { "deviceName": "iPhone X" } # Iphone X for now
+                        mobile_emulation = { "deviceName": "iPhone 6/7/8" } # Iphone X for now
                         chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
                 elif self.device_type == "mobile" and self.driver == "firefox" or self.device_type == "mobile" and self.driver == "safari":
                         USI._log_error(self, err={"value": "Only chrome can run mobile execution"})
 
                 # Broswer driver
                 if self.driver == "chrome":
+                        # Disables notifications on chrome 
+                        chrome_options.add_argument("--disable-notifications")
+
                         # Runs broswer in headless mode
                         if self.headless == True:
                                 chrome_options.add_argument("--headless")
@@ -63,6 +67,9 @@ class USI:
                         self.browser = webdriver.Chrome(executable_path=config.chrome_driver, options=chrome_options) 
 
                 elif self.driver == "firefox":
+                        # Disables notifications on firefox
+                        firefox_options.set_preference("dom.push.enabled", False)
+
                         if self.headless == True:
                                 firefox_options.headless = True
                                 firefox_options.add_argument("--window-size=1920x1080")
@@ -170,7 +177,7 @@ class USI:
         def click(self, buttons, locate_by="css"):
                 data_type = ["click", dict]
                 USI._precheck_data(self, buttons, data_type, locate_by)
-
+                
                 if locate_by == "css":
                         for name, button in buttons.items():
                                 try: 
@@ -186,6 +193,24 @@ class USI:
                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=button)
+                
+
+        def click_key(self, selector, key, secondary_key=""):
+                os_type = platform.system()
+
+                if key == "tab":
+                        self.browser.find_element_by_css_selector(selector).send_keys(Keys.TAB)
+                elif key == "enter":
+                        self.browser.find_element_by_css_selector(selector).send_keys(Keys.ENTER)
+                elif key == "ctrl" or key == "cmd":
+                        if secondary_key == "":
+                                USI._terminate_script(self, name="Missing secondary key(s)", message="secondary_ key must be passed for ctrl or cmd")
+                       
+                        # CHeck if device is mac 
+                        if os_type == "Darwin": 
+                                self.browser.find_element_by_css_selector(selector).send_keys(Keys.COMMAND, secondary_key)
+                        else:
+                                self.browser.find_element_by_css_selector(selector).send_keys(Keys.CONTROL, secondary_key)
 
 
         # Input text: accepts an dict of name and selector/input 
@@ -278,6 +303,9 @@ class USI:
                                 USI._logger(self, message="CTA => " + colored("Not found", color="red"))
                                 USI._terminate_script(self, name="CTA", element=selector)
 
+
+        def mobile_cta(self):
+                USI.execute_js("usi_js.submit();", "Mobile CTA clicked")
 
         # Clicks a button when it becomes visible
 
@@ -439,7 +467,7 @@ class USI:
 
 
                         if validate_by == "message" or validate_by == "element_message":
-                                valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerHTML")
+                                valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerText")
 
                                 if message_text == valididation_message:
                                         USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
@@ -455,7 +483,7 @@ class USI:
 
 
                         if validate_by == "message" or validate_by == "element_message":
-                                valididation_message = self.browser.find_element_by_xpath(target_element).get_attribute("innerHTML")
+                                valididation_message = self.browser.find_element_by_xpath(target_element).get_attribute("innerText")
 
                                 if message_text == valididation_message:
                                         USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
