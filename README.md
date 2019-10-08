@@ -135,11 +135,13 @@ The click function clicks on any specifed link, button etc.
 
 #### *Example:*<br> 
 ```Python
-click({"Add to Cart Button":"#addBtn"}, locate_by="css")
+click({"Add to Cart Button":"#addBtn"}, locate_by="css", node_index="")
 ```
-* Accepts two arguements
+* Accepts three arguements
   * Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
   * locate_by requires a string argument of either "css" or "xpath"; css is the default
+  * node_index accepts a number argument, use when a desired element is returning a node list. node_index=0 will click on the first element in the node list. 
+  Hint: Use document.querySelectorAll() in the console to determine if an element is returning a node list. 
 
 
 #
@@ -205,17 +207,6 @@ The launch_modal function launches an usi TT or LC modal.
 launch_modal()
 ```
 * No arguments accepted.
-
-#
-
-### click_when_visible()
-The click_when_visible function will click on a specifed link, button, etc.., when it is visible in the DOM.
-
-#### *Example:*<br> 
-```Python
-click_when_visible({"Modal checkout button":".checkout.modal-button"})
-```
-* Accepts a dictionary (object) of an element name as a key and a selector as a value.
 
 #
 

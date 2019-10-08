@@ -174,27 +174,32 @@ class USI:
 
         # button click: accepts a dict of button/link names & selector
                 # {'Add to cart button':'#cart'}
-        def click(self, buttons, locate_by="css"):
-                data_type = ["click", dict]
-                USI._precheck_data(self, buttons, data_type, locate_by)
-                
-                if locate_by == "css":
-                        for name, button in buttons.items():
-                                try: 
-                                        self.browser.find_element_by_css_selector(button).click()
-                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
-                                except Exception:
-                                        USI._terminate_script(self, name=name, element=button)
+        def click(self, buttons, locate_by="css", node_index=""):
+                        data_type = ["click", dict]
+                        USI._precheck_data(self, buttons, data_type, locate_by)
+                        
+                        if locate_by == "css":
+                                for name, button in buttons.items():
+                                        try:
+                                                if node_index != "":
+                                                        sleep(5) # give webdriver time to parse nodelist
+                                                        self.browser.find_elements_by_css_selector(button)[node_index].click()
+                                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                                else:
+                                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
+                                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                        except Exception:
+                                                USI._terminate_script(self, name=name, element=button)
 
-                elif locate_by == "xpath":
-                        for name, button in buttons.items():
-                                try: 
-                                        self.browser.find_element_by_xpath(button).click()
-                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
-                                except Exception:
-                                        USI._terminate_script(self, name=name, element=button)
+                        elif locate_by == "xpath":
+                                for name, button in buttons.items():
+                                        try: 
+                                                self.browser.find_element_by_xpath(button).click()
+                                                USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                        except Exception:
+                                                USI._terminate_script(self, name=name, element=button)
                 
-
+                
         def click_key(self, selector, key, secondary_key=""):
                 os_type = platform.system()
 
@@ -222,15 +227,16 @@ class USI:
                 if locate_by == "css":
                         for name, value in input_data.items():
                                 try:
-                                        self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
+                                        # self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
+                                        WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, value[0]))).send_keys(value[1])
                                         USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
-                                        USI._terminate_script(name,value[0])
                                         USI._terminate_script(self, name=name, element=value[0])
                 elif locate_by == "xpath":
                         for name, value in input_data.items():
                                 try:
-                                        self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
+                                        # self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
+                                        WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.XPATH, value[0]))).send_keys(value[1])
                                         USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=value[0])
@@ -306,27 +312,6 @@ class USI:
 
         def mobile_cta(self):
                 USI.execute_js("usi_js.submit();", "Mobile CTA clicked")
-
-        # Clicks a button when it becomes visible
-
-        def click_when_visible(self, elements, locate_by="css"):
-                data_type = ["click_when_visible", dict]
-                USI._precheck_data(self, elements, data_type, locate_by)
-
-                if locate_by == "css":
-                        for name, value in elements.items():
-                                try:
-                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, value))).click()
-                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
-                                except Exception:
-                                        USI._terminate_script(self, name=name, element=value)
-                elif locate_by == "xpath":
-                        for name, value in elements.items():
-                                try:
-                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, value))).click()
-                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
-                                except Exception:
-                                        USI._terminate_script(self, name=name, element=value)
 
 
         # Select box function 
@@ -415,7 +400,7 @@ class USI:
                         USI._precheck_data(self, item, data_type)
 
                 try:
-                        USI.click_when_visible(self, elements={"USI tab":tab})
+                        USI.click(self, buttons={"USI tab":tab})
                 except Exception:
                         USI._terminate_script(self, name="tab", element="#usi_tab")
                 
