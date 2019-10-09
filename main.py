@@ -267,11 +267,12 @@ class USI:
                 if locate_by == "css":
                         for name, elements in elements.items():
                                 try:
-                                        visible_element = self.browser.find_element_by_css_selector(elements[0])
+                                        visible_element = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[0])))
                                 except Exception:
                                         USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
-                                        hidden_element = self.browser.find_element_by_css_selector(elements[1])
+                                       hidden_element =  WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[1])))
+
                                 except Exception:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
@@ -283,11 +284,12 @@ class USI:
                 elif locate_by == "xpath":
                         for name, elements in elements.items():
                                 try:
-                                        visible_element = self.browser.find_element_by_xpath(elements[0])
+                                        visible_element = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, elements[0])))
                                 except Exception:
                                         USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
-                                        hidden_element = self.browser.find_element_by_xpath(elements[1])
+                                       hidden_element =  WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, elements[1])))
+
                                 except Exception:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
@@ -385,7 +387,7 @@ class USI:
                 USI._precheck_data(self, boostbar, data_type)
 
                 try:
-                        if self.browser.find_element_by_css_selector(boostbar):
+                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, boostbar))):
                                 USI._logger(self, message="Boostbar => " + colored("Exists", "green"))
                 except Exception:
                         USI._terminate_script(self, name="Boostbar", element=boostbar)
@@ -441,39 +443,35 @@ class USI:
                 for item in validate_items:
                         USI._precheck_data(self, item, data_type)
 
-                sleep(5)
-
                 if locate_by == "css":
                         try:
-                                if self.browser.find_element_by_css_selector(target_element):
+                                if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, target_element))):
                                         USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
-
-
-                        if validate_by == "message" or validate_by == "element_message":
-                                valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerText")
-
-                                if message_text == valididation_message:
-                                        USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
-                                else:
-                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
+                       
+                        if validate_by == "message" or validate_by == "element_message":                                
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, target_element), message_text)):
+                                                USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                except Exception:
+                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
                
                 if locate_by == "xpath":
                         try:
-                                if self.browser.find_element_by_xpath(target_element):
+                                if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, target_element))):
                                         USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
-
-
+                       
                         if validate_by == "message" or validate_by == "element_message":
-                                valididation_message = self.browser.find_element_by_xpath(target_element).get_attribute("innerText")
-
-                                if message_text == valididation_message:
-                                        USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
-                                else:
-                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message=f"Returned validation message: {valididation_message}")
+                                # valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerText")
+                                
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.XPATH, target_element), message_text)):
+                                                USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                except Exception:
+                                        USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
