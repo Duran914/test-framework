@@ -85,8 +85,7 @@ class USI:
                 self.browser.implicitly_wait(15)
 
                 # Log script info & results
-                results = colored(self.company + " " + self.campaign_type + " " + 
-                self.site_id, color="cyan") + " => " + colored("Running...", color="green")
+                results = colored(f"{self.company} {self.campaign_type} {self.site_id}", color="cyan") + f" - {self.driver.capitalize()}|{self.device_type.capitalize()} => " + colored("Running...", color="green")
                 USI._logger(self, message=results)
                 
         
@@ -149,8 +148,8 @@ class USI:
                 USI._logger(self, message="\n")
                 sys.exit()
 
-
-        # Internal function to return a cookie value
+      
+  # Internal function to return a cookie value
         def _retrive_cookie(self, cookie):
                 sleep(2)
                 if self.browser.get_cookie(cookie) is None:
@@ -199,7 +198,10 @@ class USI:
                                         except Exception:
                                                 USI._terminate_script(self, name=name, element=button)
                 
-                
+
+        ''' click_key will click on a keyboard key
+            currently only supports tab, enter, ctrl, and command(mac)
+            click_key(self, selector="body", key="tab", secondary_key="") '''
         def click_key(self, selector, key, secondary_key=""):
                 os_type = platform.system()
 
@@ -387,7 +389,7 @@ class USI:
                 USI._precheck_data(self, boostbar, data_type)
 
                 try:
-                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, boostbar))):
+                        if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
                                 USI._logger(self, message="Boostbar => " + colored("Exists", "green"))
                 except Exception:
                         USI._terminate_script(self, name="Boostbar", element=boostbar)
@@ -493,6 +495,26 @@ class USI:
                                 USI._terminate_script(self, name="Close button", element=selector)
 
 
+        ''' Checks to see if a desired element is present on the DOM and visible on page. 
+            Can be used as a condition for another action. 
+            Ex. wait_for_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
+        '''
+        def wait_for_element_visibility(self, element_name, selector, locate_by="css"):
+                if locate_by == "css":
+                        try:
+                                if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
+                                        USI._logger(self, message=f"{element_name} => {selector} " + colored("Located", "green"))
+                        except Exception:
+                                USI._terminate_script(self, name=element_name, element=selector)
+                elif locate_by == "xpath":
+                        try:
+                                if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.XPATH, selector))):
+                                        USI._logger(self, message=f"{element_name} => {selector} " + colored("Located", "green"))
+                        except Exception:
+                                USI._terminate_script(self, name=element_name, element=selector)
+
+
+
         # Open an email in a broswer window which can be use to check email links are working 
                 #Accepts two strings of session name and element xpath for the email element (xpath MUST be used here).
                         #  usi_email_link(self, 
@@ -512,7 +534,7 @@ class USI:
                 elif override_session_name != "":
                         cookie_session_name == override_session_name
      
-                sleep(5)
+                sleep(5) # Static wait for email to process
                 USI.navigate_url(self, url=f"https://www.upsellit.com/email/onlineversion.jsp?{USI._retrive_cookie(self, cookie=cookie_session_name)}~1")
                 
                 tries = 3 # will try to refresh page 3 times to load email in broswer 
@@ -537,7 +559,7 @@ class USI:
                 # split_test_check(self, dice_roll="usi_dice_roll27248")
                 # naming convention is normally as such usi_dice_roll27248, double check app file. 
         def split_test_check(self, dice_roll):
-                sleep(5)
+                sleep(5) # Static wait for cookie creation
                 data_type = ["split_test_check", str]
                 USI._precheck_data(self, dice_roll, data_type)
                 
@@ -580,7 +602,7 @@ class USI:
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
                 
-        
+
         # Takes screenshot
         def take_screenshot(self, screenshot_name="default.png"):
                 self.browser.save_screenshot(f"{screenshot_name}.png")
@@ -595,7 +617,7 @@ class USI:
         def shutdown(self):
                 complete_time = round((time() - start_time), 1)
                 USI._logger(self, message=colored("Shutting down driver", color="yellow"))
-                sleep(3)
+                sleep(3) # Static wait solely for UX
                 self.browser.quit()
                 USI._logger(self, message=colored("---------------------------Test Complete-----------------------------", color="green") +
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
