@@ -278,6 +278,20 @@ usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/t
 
 #
 
+### wait_for_element_visibility()
+The wait_for_element_visibility function checks if a desired element is present on the DOM and visible on page.
+
+#### *Example:*<br> 
+```Python
+wait_for_element_visibility(element_name="Login Modal", selector="#login-modal", locate_by="css")
+```
+* Accepts 3 arguements
+  * element_name accepts a string argument of a name for the element.
+  * selector accepts a string argument of the element selector class/id
+  * locate_by accpets a string arguemnt of either css or xpath, default is css
+
+#
+
 ### get_cookie()
 The get_cookie function will retrieve a cookie. 
 
@@ -344,6 +358,18 @@ The boostbar_check function checks if a boost bar has launched.
 boostbar_check(selector="#usi_boost_container")
 ```
 * Accepts a string argument of selector, default is "#usi_boost_container".
+
+#
+
+### switch_tab()
+The switch_tab function will change to a specific tab when multiple are open. Tabs start at zero. 
+
+#### *Example:*<br> 
+```Python
+witch_tab(tab=1)
+```
+* Accepts a single arguement
+  *  tab accepts a int argument of the desired tab you want to switch to. 1 is the default tab. 
 
 #
 

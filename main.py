@@ -320,6 +320,7 @@ class USI:
 
         # Select box function 
                 # Accpets a dict of name and list of css selector & value or text
+                #select_option({"Plug type select":["#pa_plug-type","us-plug"]}, select_by="value")
         def select_option(self, select_data, select_by="value"):
                 data_type = ["checkbox", dict]
                 USI._precheck_data(self, select_data, data_type)
@@ -553,6 +554,14 @@ class USI:
                 # In the event of an email link missing a target="_blank" attribute; set new_window argument to false
                 if new_window == True:
                         self.browser.switch_to.window(self.browser.window_handles[1])
+
+        ''' 
+        switch_tab will move to a desired tab when multiple are open.
+        Default value is 1 from the left.(0 is considered the first tab)
+        )
+        '''
+        def switch_tab(self, tab=1):
+                self.browser.switch_to.window(self.browser.window_handles[tab])
 
 
         # Checks a split test result, test will terminate as a no pass/fail is result is Control Group
