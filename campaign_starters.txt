@@ -1,0 +1,106 @@
+
+# Templates for all campaign types. 
+# Copy-pasta & adjust as needed. 
+# Refer to documentation for further explanations.
+
+################# Targeted Tactic Example #################
+
+
+try:
+        company_tt_12345 = USI("Company Name", "TT", "12345", driver="chrome", headless=False, log_file=False)
+        company_tt_12345.initiate_test()
+        company_tt_12345.navigate_url("https://www.compnay-name.com")
+        company_tt_12345.click({
+                "Target element name":"#css-selector", 
+                "Target element name":"#css-selector",
+                "Target element name":"#css-selector"
+                })
+        company_tt_12345.launch_modal()
+        company_tt_12345.click_cta()
+        company_tt_12345.boostbar_check()
+        company_tt_12345.click({"Target element name":"#css-selector"})
+        company_tt_12345.coupon_validation(
+                validate_by="type_of_validation",
+                message_text="String of text",
+                target_element="#css-selector"
+                ) 
+        company_tt_12345.shutdown()
+except BaseException:
+        pass
+
+
+
+################# Lead Capture Example #################
+
+
+try:
+        company_lc_12346 = USI("Company Name", "LC", "12346", driver="chrome", headless=False, log_file=False)
+        company_lc_12346.initiate_test()
+        company_lc_12346.navigate_url("https://www.compnay-name.com?datahound=1")
+        company_lc_12346.launch_modal()
+        company_lc_12346.click_cta()
+        company_lc_12346.email_link_follow("lc", "insert/xpath/to/element")
+        company_lc_12346.boostbar_check()
+        company_lc_12346.click({
+                "Target element name":"#css-selector", 
+                "Target element name":"#css-selector",
+                "Target element name":"#css-selector"
+                })
+        company_lc_12346.coupon_validation(
+                validate_by="type_of_validation",
+                message_text="String of text",
+                target_element="#css-selector"
+                ) 
+        company_lc_12346.shutdown()
+except BaseException:
+        pass
+
+
+################# PreCapture Example #################
+
+
+try:
+        company_pc_12347 = USI("Company Name", "PC", "12347", driver="chrome", headless=False, log_file=False)
+        company_pc_12347.initiate_test()
+        company_pc_12347.navigate_url("https://www.compnay-name.com")
+        company_pc_12347.click({
+                "Target element name":"#css-selector", 
+                "Target element name":"#css-selector",
+                "Target element name":"#css-selector"
+                })
+        company_pc_12347.append_url("datahound=1") 
+        company_pc_12347.input_text({"Email address field": ["#Email-selector-here","yourEmail@mail.com"]})
+        company_pc_12347.email_link_follow("pc", "insert/xpath/to/element")
+        company_pc_12347.boostbar_check()
+        company_pc_12347.click({"Target element name":"#css-selector"})
+        company_pc_12347.coupon_validation(
+                validate_by="type_of_validation",
+                message_text="String of text",
+                target_element="#css-selector"
+                ) 
+        company_pc_12347.shutdown()
+except BaseException:
+        pass
+
+
+################# On-Page Recommendation Example #################
+
+
+try:
+        company_rec_12348 = USI("Company Name", "REC", "12348", driver="chrome", headless=False, log_file=False)
+        company_rec_12348.initiate_test()
+        company_rec_12348.navigate_url("https://www.compnay-name.com")
+        company_rec_12348.click({"Product rec name":"#css-selector"})
+        company_rec_12348.switch_tab()
+        company_rec_12348.click({
+                "Clickable element":"#css-selector",
+                "Clickable element":"#css-selector"
+                })
+        company_rec_12348.coupon_validation(
+                validate_by="type_of_validation",
+                message_text="String of text",
+                target_element="#css-selector"
+                ) 
+        company_rec_12348.shutdown()
+except BaseException:
+        pass
