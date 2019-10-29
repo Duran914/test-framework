@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import JavascriptException
+from selenium.common.exceptions import SessionNotCreatedException
 from time import sleep, time
 import config  # Create & populate config.py 
 from termcolor import colored
@@ -64,7 +65,11 @@ class USI:
                         if self.headless == True:
                                 chrome_options.add_argument("--headless")
                                 chrome_options.add_argument("--window-size=1920x1080") # Desktop execution
-                        self.browser = webdriver.Chrome(executable_path=config.chrome_driver, options=chrome_options) 
+
+                        try:
+                                self.browser = webdriver.Chrome(executable_path=config.chrome_driver, options=chrome_options)
+                        except SessionNotCreatedException as msg:
+                                USI._terminate_script(self, name="Chrome Webdriver", message=msg)
 
                 elif self.driver == "firefox":
                         # Disables notifications on firefox
@@ -304,7 +309,6 @@ class USI:
         def click_cta(self, selector="#usi_content .usi_submitbutton", clicks=1):
                 data_type = ["click_cta", str]
                 USI._precheck_data(self, selector, data_type)
-
                 for _ in range(clicks):
                         try:
                                 WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
@@ -337,7 +341,9 @@ class USI:
 
 
         # Launches Modal: No args accepted (USI)
-        def launch_modal(self, proactive=False, sec=""):
+        def launch_modal(self, proactive=False, sec=5):
+                data_type = ["launch_modal", int]
+                USI._precheck_data(self, sec, data_type)
                 if proactive == False:
                         USI.halt_execution(self, sec=5)
                         try:
@@ -349,7 +355,7 @@ class USI:
                         if sec == "":
                                 USI._terminate_script(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
                         else: 
-                                USI.halt_execution(self, sec=5)
+                                USI.halt_execution(self, sec)
                                 try:
                                         self.browser.find_element_by_css_selector(".usi_display.usi_show_css")
                                         USI._logger(self, message="USI Modal => " + colored("Launched", color="green"))
@@ -468,7 +474,6 @@ class USI:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
                        
                         if validate_by == "message" or validate_by == "element_message":
-                                # valididation_message = self.browser.find_element_by_css_selector(target_element).get_attribute("innerText")
                                 
                                 try:
                                         if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.XPATH, target_element), message_text)):
@@ -500,20 +505,33 @@ class USI:
             Can be used as a condition for another action. 
             Ex. wait_for_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
         '''
-        def wait_for_element_visibility(self, element_name, selector, locate_by="css"):
+        def wait_for_element_visibility(self, element_name, selector, text="", locate_by="css"):
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
-                                        USI._logger(self, message=f"{element_name} => {selector} " + colored("Located", "green"))
+                                        USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
+                        
+                        if text != "":                                
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)):
+                                                USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
+                                except Exception:
+                                        USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
                 elif locate_by == "xpath":
                         try:
                                 if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.XPATH, selector))):
-                                        USI._logger(self, message=f"{element_name} => {selector} " + colored("Located", "green"))
+                                        USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
-
+                        
+                        if text != "":                                
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.XPATH, selector), text)):
+                                                USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
+                                except Exception:
+                                        USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
 
 
         # Open an email in a broswer window which can be use to check email links are working 
