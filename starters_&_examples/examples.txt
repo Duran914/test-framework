@@ -1,0 +1,67 @@
+# Examples
+
+
+################# Targeted Tactic Example #################
+
+try:
+        heatholders_tt_27889 = USI("Heat Holders", "TT", "27889", headless=True, log_file=False)
+        heatholders_tt_27889.initiate_test()
+        heatholders_tt_27889.navigate_url("https://www.heatholders.com/collections/best-sellers/products/mens-lite-socks?usi_enable=1")
+        heatholders_tt_27889.click({
+                "Add To Cart":".product__payment-container .button--primary",
+                "Go To Cart":".product__form-status .button--secondary"
+        })
+        heatholders_tt_27889.launch_modal()
+        heatholders_tt_27889.click_cta()
+        heatholders_tt_27889.coupon_validation(
+                validate_by="element_message", 
+                target_element=".total-line__name .reduction-code .reduction-code__text", 
+                message_text="REDEEM15"
+                )
+        heatholders_tt_27889.shutdown()  
+except BaseException:
+        pass
+
+################# Lead Capture Example #################
+
+try:
+        nourage_lc_25220 = USI("Nourage", "LC", "25220", headless=True, log_file=False)
+        nourage_lc_25220.initiate_test()
+        nourage_lc_25220.navigate_url("https://nourage.com/?datahound=1")
+        nourage_lc_25220.lc_input("jdran@mail.com")
+        nourage_lc_25220.click_cta(clicks=2)
+        nourage_lc_25220.email_link_follow("lc", "/html/body/div/div[1]/table/tbody/tr/td/div/table/tbody/tr/td/table/tbody/tr/td/a")
+        nourage_lc_25220.click({
+                "Navbar Shop Link":"#SiteNav li:first-child .site-nav__link",
+                "Order Now Button":"#Collection ul li:nth-child(2) #ordernow",
+                "Checkout Button":".cart__submit-controls input[name=checkout]"
+        })
+        nourage_lc_25220.input_text({"Discount code field": ["#checkout_reduction_code","HappyHair19"]})
+        nourage_lc_25220.click({"Apply Button":".field__input-btn-wrapper button"})
+        nourage_lc_25220.coupon_validation(
+                validate_by="element_message", target_element=".tag__wrapper .reduction-code__text", 
+                message_text="HAPPYHAIR19"
+                )
+        nourage_lc_25220.shutdown()  
+except BaseException:
+        pass
+
+################# PreCapture Example #################
+
+try:
+        kitchenaid_pc_27604 = USI("Kitchen Aid", "PC", "27604", headless=False, log_file=False)
+        kitchenaid_pc_27604.initiate_test()
+        kitchenaid_pc_27604.navigate_url("https://www.kitchenaid.ca/en_ca/countertop-appliances/coffee-products/coffee-grinders/p.burr-grinder.kcg0702ob.html?usi_enable=1")
+        kitchenaid_pc_27604.click({
+                "Add To Cart":".pdp-tray__cta .button.add-to-cart-btn",
+                "Proceed to cart":".modal-add-to-cart-cfm__pro-to-checkout",
+                "Proceed to checkout":" .checkoutKaButton"
+        })
+        kitchenaid_pc_27604.append_url("datahound=1")
+        kitchenaid_pc_27604.input_text({"Email address field": ["#headerSigninEmail","testing@mail.com"]})
+        kitchenaid_pc_27604.email_link_follow("pc","/html/body/div/div[1]/table/tbody/tr/td/div/table/tbody/tr/td/table/tbody/tr[2]/td/a")
+        kitchenaid_pc_27604.hover_and_click({"Mini cart checkout button":["button.header-cart-trigger", "a.cart-mini__btn.checkout-cart-mini-btn"]})
+        kitchenaid_pc_27604.coupon_validation(validate_by="element", target_element=".shopping-cart-promo-code-text-field")
+        kitchenaid_pc_27604.shutdown()  
+except BaseException:
+        pass
