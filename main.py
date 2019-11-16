@@ -465,7 +465,7 @@ class USI:
                                                 USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
-               
+
                 if locate_by == "xpath":
                         try:
                                 if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, target_element))):
@@ -480,6 +480,43 @@ class USI:
                                                 USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
+                
+
+
+        def discount_check(self, promo_data, discount_data, locate_by="css"):
+                if discount_data != {}:
+
+                        for amount_name,element in discount_data.items():
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"):
+                                                USI._logger(
+                                                        self, message=f"{amount_name} => " + colored
+                                                        (WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"), 
+                                                        color="green")
+                                                        )
+                                except Exception:
+                                        USI._terminate_script(self, name=amount_name, element=element, message=f"Could not be found")
+
+
+                prices_list = list(discount_data.values())
+                sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[0]))).get_attribute("innerText")
+                discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[1]))).get_attribute("innerText")
+                sub_after = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[2]))).get_attribute("innerText")
+
+                prices_list = [sub_total, discount, sub_after]
+                totals = [int(re.sub(r"[$.-]", "", num)) for num in prices_list]
+                
+                
+                if promo_data[0] == "percent":
+                        desired_value = int(totals[0] - round(float(totals[0]) * float(promo_data[1])))
+                elif promo_data[0] == "fixed":
+                        desired_value = totals[0] - (promo_data[1] * 100)
+
+                if int(desired_value) != int(totals[2]):
+                        USI._terminate_script(self, name="Discount: ", message=f"Correct Amount should be {totals[2]}", element=desired_value)
+                else:
+                        USI._logger(self, message=f"Discount amount: {promo_data[1]} off => " + colored("Correct", "green"))
+
 
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
