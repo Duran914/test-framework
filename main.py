@@ -481,11 +481,22 @@ class USI:
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
                 
-
-
+                
+        '''
+        THe discount_check check if a promo codes is applying the correct percentage or fixed amount off.
+        promo_data accepts a array of subtotal, discount, and final_total
+        discount_data accepts an dictionary, keys specify the element name which are subtotal, discount, and final_total and their associated values 
+        are their selector. 
+        locate_by allow to scrape by css selector or xpath
+        '''
         def discount_check(self, promo_data, discount_data, locate_by="css"):
-                if discount_data != {}:
-
+                data_type1 = ["promo_data", list]
+                data_type2 = ["discount_check", str]
+                USI._precheck_data(self, promo_data, data_type1)
+                USI._precheck_data(self, discount_data, data_type2)
+                
+                # if discount_data != {}:
+                if locate_by == "css":
                         for amount_name,element in discount_data.items():
                                 try:
                                         if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"):
@@ -498,12 +509,30 @@ class USI:
                                         USI._terminate_script(self, name=amount_name, element=element, message=f"Could not be found")
 
 
-                prices_list = list(discount_data.values())
-                sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[0]))).get_attribute("innerText")
-                discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[1]))).get_attribute("innerText")
-                sub_after = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[2]))).get_attribute("innerText")
+                        prices_list = list(discount_data.values())
+                        sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[0]))).get_attribute("innerText")
+                        discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[1]))).get_attribute("innerText")
+                        final_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[2]))).get_attribute("innerText")
 
-                prices_list = [sub_total, discount, sub_after]
+                if locate_by == "xpath":
+                        for amount_name,element in discount_data.items():
+                                try:
+                                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"):
+                                                USI._logger(
+                                                        self, message=f"{amount_name} => " + colored
+                                                        (WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"), 
+                                                        color="green")
+                                                        )
+                                except Exception:
+                                        USI._terminate_script(self, name=amount_name, element=element, message=f"Could not be found")
+
+
+                        prices_list = list(discount_data.values())
+                        sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[0]))).get_attribute("innerText")
+                        discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[1]))).get_attribute("innerText")
+                        final_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[2]))).get_attribute("innerText")
+
+                prices_list = [sub_total, discount, final_total]
                 totals = [int(re.sub(r"[$.-]", "", num)) for num in prices_list]
                 
                 
@@ -516,6 +545,7 @@ class USI:
                         USI._terminate_script(self, name="Discount: ", message=f"Correct Amount should be {totals[2]}", element=desired_value)
                 else:
                         USI._logger(self, message=f"Discount amount: {promo_data[1]} off => " + colored("Correct", "green"))
+
 
 
         # Closes usi modal (USI)
