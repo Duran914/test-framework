@@ -151,7 +151,7 @@ class USI:
                         USI._logger(self, message=colored("--------------------------Test Failed----------------------------------", color="red") +
                         "\n" + f"{name}: {element} => " +  colored(message, color="red"), log_to_file=True)
                 USI._logger(self, message="\n")
-                sys.exit()
+                self.browser.quit()
 
       
   # Internal function to return a cookie value
@@ -491,7 +491,7 @@ class USI:
         '''
         def discount_check(self, promo_data, discount_data, locate_by="css"):
                 data_type1 = ["promo_data", list]
-                data_type2 = ["discount_check", str]
+                data_type2 = ["discount_check", dict]
                 USI._precheck_data(self, promo_data, data_type1)
                 USI._precheck_data(self, discount_data, data_type2)
                 
@@ -541,10 +541,14 @@ class USI:
                 elif promo_data[0] == "fixed":
                         desired_value = totals[0] - (promo_data[1] * 100)
 
-                if int(desired_value) != int(totals[2]):
-                        USI._terminate_script(self, name="Discount: ", message=f"Correct Amount should be {totals[2]}", element=desired_value)
+                # used to account for site that may round up or down 
+                low_threshold = int(desired_value) - 1
+                high_threshold = int(desired_value) + 2
+
+                if int(desired_value) == int(totals[2]) or totals[2] in range(low_threshold, high_threshold):
+                        USI._logger(self, message=f"Discount amount: {format(promo_data[1], '.2f')} off => " + colored("Correct", "green"))
                 else:
-                        USI._logger(self, message=f"Discount amount: {promo_data[1]} off => " + colored("Correct", "green"))
+                        USI._terminate_script(self, name="Discount: ", message=f"Correct Amount should be {totals[2]}", element=desired_value)
 
 
 
