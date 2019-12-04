@@ -152,6 +152,7 @@ class USI:
                         "\n" + f"{name}: {element} => " +  colored(message, color="red"), log_to_file=True)
                 USI._logger(self, message="\n")
                 self.browser.quit()
+                sys.exit()
 
       
   # Internal function to return a cookie value
@@ -359,7 +360,7 @@ class USI:
                                 try:
                                         self.browser.find_element_by_css_selector(".usi_display.usi_show_css")
                                         USI._logger(self, message="USI Modal => " + colored("Launched", color="green"))
-                                except Exception:
+                                except JavascriptException:
                                         USI._terminate_script(self, name="USI Modal", message="Proactive Launch conditions not met", element=".usi_display")
 
 
@@ -488,6 +489,14 @@ class USI:
         discount_data accepts an dictionary, keys specify the element name which are subtotal, discount, and final_total and their associated values 
         are their selector. 
         locate_by allow to scrape by css selector or xpath
+        company_tt_123.discount_check(
+                 promo_data=["percent", .10],
+                 discount_data = {
+                 "Subtotal":"#selector",
+                 "Discount":"#selector",
+                 "New Total": "#selector"
+                 }
+        )
         '''
         def discount_check(self, promo_data, discount_data, locate_by="css"):
                 data_type1 = ["promo_data", list]
