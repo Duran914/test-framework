@@ -191,7 +191,7 @@ class USI:
                                                         self.browser.find_elements_by_css_selector(button)[node_index].click()
                                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
                                                 else:
-                                                        WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
+                                                        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
                                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
                                         except Exception:
                                                 USI._terminate_script(self, name=name, element=button)
@@ -236,7 +236,7 @@ class USI:
                         for name, value in input_data.items():
                                 try:
                                         # self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
-                                        WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, value[0]))).send_keys(value[1])
+                                        WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, value[0]))).send_keys(value[1])
                                         USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=value[0])
@@ -244,7 +244,7 @@ class USI:
                         for name, value in input_data.items():
                                 try:
                                         # self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
-                                        WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.XPATH, value[0]))).send_keys(value[1])
+                                        WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.XPATH, value[0]))).send_keys(value[1])
                                         USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=value[0])
@@ -275,11 +275,11 @@ class USI:
                 if locate_by == "css":
                         for name, elements in elements.items():
                                 try:
-                                        visible_element = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[0])))
+                                        visible_element = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[0])))
                                 except Exception:
                                         USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
-                                       hidden_element =  WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[1])))
+                                       hidden_element =  WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, elements[1])))
 
                                 except Exception:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
@@ -292,11 +292,11 @@ class USI:
                 elif locate_by == "xpath":
                         for name, elements in elements.items():
                                 try:
-                                        visible_element = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, elements[0])))
+                                        visible_element = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, elements[0])))
                                 except Exception:
                                         USI._terminate_script(self, name="visible element", element=elements[0])
                                 try:
-                                       hidden_element =  WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, elements[1])))
+                                       hidden_element =  WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, elements[1])))
 
                                 except Exception:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
@@ -312,7 +312,7 @@ class USI:
                 USI._precheck_data(self, selector, data_type)
                 for _ in range(clicks):
                         try:
-                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+                                WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                                 USI._logger(self, message="CTA => " + colored("Clicked", color="green"))
                         except Exception:
                                 USI._logger(self, message="CTA => " + colored("Not found", color="red"))
@@ -397,7 +397,7 @@ class USI:
                 USI._precheck_data(self, boostbar, data_type)
 
                 try:
-                        if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
+                        if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
                                 USI._logger(self, message="Boostbar => " + colored("Exists", "green"))
                 except Exception:
                         USI._terminate_script(self, name="Boostbar", element=boostbar)
@@ -455,21 +455,21 @@ class USI:
 
                 if locate_by == "css":
                         try:
-                                if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, target_element))):
+                                if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, target_element))):
                                         USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
                        
                         if validate_by == "message" or validate_by == "element_message":                                
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, target_element), message_text)):
+                                        if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, target_element), message_text)):
                                                 USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
 
                 if locate_by == "xpath":
                         try:
-                                if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, target_element))):
+                                if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, target_element))):
                                         USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
@@ -477,7 +477,7 @@ class USI:
                         if validate_by == "message" or validate_by == "element_message":
                                 
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.XPATH, target_element), message_text)):
+                                        if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.XPATH, target_element), message_text)):
                                                 USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
@@ -508,10 +508,10 @@ class USI:
                 if locate_by == "css":
                         for amount_name,element in discount_data.items():
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"):
+                                        if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"):
                                                 USI._logger(
                                                         self, message=f"{amount_name} => " + colored
-                                                        (WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"), 
+                                                        (WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"), 
                                                         color="green")
                                                         )
                                 except Exception:
@@ -519,17 +519,17 @@ class USI:
 
 
                         prices_list = list(discount_data.values())
-                        sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[0]))).get_attribute("innerText")
-                        discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[1]))).get_attribute("innerText")
-                        final_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[2]))).get_attribute("innerText")
+                        sub_total = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[0]))).get_attribute("innerText")
+                        discount = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[1]))).get_attribute("innerText")
+                        final_total = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, prices_list[2]))).get_attribute("innerText")
 
                 if locate_by == "xpath":
                         for amount_name,element in discount_data.items():
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"):
+                                        if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"):
                                                 USI._logger(
                                                         self, message=f"{amount_name} => " + colored
-                                                        (WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"), 
+                                                        (WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"), 
                                                         color="green")
                                                         )
                                 except Exception:
@@ -537,9 +537,9 @@ class USI:
 
 
                         prices_list = list(discount_data.values())
-                        sub_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[0]))).get_attribute("innerText")
-                        discount = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[1]))).get_attribute("innerText")
-                        final_total = WebDriverWait(self.browser, 60).until(EC.presence_of_element_located((By.XPATH, prices_list[2]))).get_attribute("innerText")
+                        sub_total = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, prices_list[0]))).get_attribute("innerText")
+                        discount = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, prices_list[1]))).get_attribute("innerText")
+                        final_total = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, prices_list[2]))).get_attribute("innerText")
 
                 prices_list = [sub_total, discount, final_total]
                 totals = [int(re.sub(r"[$.-]", "", num)) for num in prices_list]
@@ -569,13 +569,13 @@ class USI:
 
                 if locate_by == "css":
                         try:
-                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
+                                WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                                 USI._logger(self, message="Modal => " + colored("Closed", "green"))
                         except Exception:
                                 USI._terminate_script(self, name="Close button", element=selector)
                 if locate_by == "xpath":
                         try:
-                                WebDriverWait(self.browser, 90).until(EC.element_to_be_clickable((By.XPATH, selector))).click()
+                                WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH, selector))).click()
                                 USI._logger(self, message="Modal => " + colored("Closed", "green"))
                         except Exception:
                                 USI._terminate_script(self, name="Close button", element=selector)
@@ -588,27 +588,27 @@ class USI:
         def wait_for_element_visibility(self, element_name, selector, text="", locate_by="css"):
                 if locate_by == "css":
                         try:
-                                if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
+                                if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
                                         USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)):
+                                        if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)):
                                                 USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
                 elif locate_by == "xpath":
                         try:
-                                if WebDriverWait(self.browser, 60).until(EC.visibility_of_element_located((By.XPATH, selector))):
+                                if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.XPATH, selector))):
                                         USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
-                                        if WebDriverWait(self.browser, 60).until(EC.text_to_be_present_in_element((By.XPATH, selector), text)):
+                                        if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.XPATH, selector), text)):
                                                 USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
