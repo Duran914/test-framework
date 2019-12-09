@@ -757,15 +757,3 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
-try:
-        masc_TT_26848 = USI("Masc", "TT", "26848", headless=False)
-        masc_TT_26848.initiate_test()
-        masc_TT_26848.navigate_url("https://www.mascbyjeffchastain.com/product/kuschelbar/")
-        masc_TT_26848.select_option({"Plug type select":["#pa_plug-type","us-plug"]}, select_by="value")
-        masc_TT_26848.click({"Add to Cart Button": ".single_add_to_cart_button"})
-        masc_TT_26848.launch_modal()
-        masc_TT_26848.click_cta()
-        masc_TT_26848.coupon_validation(validate_by="element_text", target_element=".woocommerce-message", message_text="Coupon code applied successfully.")
-        masc_TT_26848.shutdown()
-except BaseException:
-        pass
