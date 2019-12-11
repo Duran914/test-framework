@@ -12,7 +12,17 @@
 * Download browser drivers
     * https://www.seleniumhq.org/download/ (Framework currently supports Chrome, Firefox, and Safari)
     * Safari driver can be found at /usr/bin/safaridriver
-    
+* Text Editor or IDE of your choice
+
+
+## Prerequisites   
+
+* Knowledge of HTML, CSS and Javascript.
+* Python 3 knowledge is helpful but NOT necessary, any programming language with basic knowledge such as arrays, objects, arguemnts and parameters will do. 
+* Intermediate knowledge of traversing the DOM, CSS selectors, and XPATH.
+* Knowledge of navigating a browser console.
+* Comfortable working in a terminal or windows cmd enviroment. 
+
   
 ## Getting Started 
 * Download or git clone main.py
@@ -99,13 +109,15 @@ Possible Errors Include:
 
 Before writing a test script you must create an instance of the USI class for EVERY campaign.
 ```Python
-ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False, log_file=True)
+ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False, log_file=True, border_color="green")
 ```
 * Requires company name, campaign type, site id.
 * driver can accept "chrome", "firefox", "safari"; default is set to "chrome".
 * device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only works on chrome. 
 * headless accepts a boolean of "True" or "False"; default is False. Only chrome and firefox support headless.
 * log_file will write errors to a log file. Accepts a boolean of true or false. Default is set to True.
+* border_color will add a border color around the element that is being interacted with when possible. 
+Acceptable values are "green", "red", and None. Strictly for visual.
 
 ### initiate_test()
 The initiate_test function must come immediately after creating a new instance of the USI class. This function creates all
@@ -254,8 +266,25 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 
 #
 
+#
+
+ ### discount_check()
+ The discount_check function calculates discounts and subtotals. Purpose is to check if the correct promotion amount
+ is being given. The coupon_validation() is normally sufficient to check a coupon code's vadility, use only if coupon_validation is not sufficient.
+
+ #### *Example:*<br> 
+ ```Python
+discount_check(promo_data=["percent", .10], discount_data={"Subtotal":"#selector","Discount":"#selector","Grand Total":"#selector"})
+ ```
+ * Accepts 2 arguements promo_date and discount_data
+   * promo_data accepts a list of string argument of either "precent" for a percentage discount or "fixed" for a fixed dollar amount
+   * dicount_data accepts a dictionary, keys should be Subtotal, Discount and Grand total with thier value being thier associated css selectors
+
+ #
+
 ### split_test_check()
 The split_test_check function determines if a split test campaign is "USI" or "CONTROL". Script will abort if split test is control group.
+When a split test results in the control group the test will abort as a warning. Will not be recorded as a failed test.
 
 #### *Example:*<br> 
 ```Python
@@ -266,7 +295,8 @@ split_test_check(dice_roll="usi_dice_roll27248")
 #
 
 ### email_link_follow()
-The email_link_check function opens a LC or PC email and clicks on a specified element by XPATH.
+The email_link_check function opens a LC or PC email and clicks on a specified element by XPATH. Best practive is to scrape for
+the first modal a link image as it is likely to stay the same. 
 ```Python
 usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/table/tbody/tr/td/table[1]/tbody/tr/td/a", override_session_name="", new_window=True)
 ```
@@ -386,7 +416,7 @@ mobile_interact()
 
 ### halt_execution()
 The halt_execution function stops execution for a predefined amount of time.<br>
-*WARNING: Use with caution, a thread.sleep can be unreliable and slow down tests. All functions have a predefined 15s wait time to poll the DOM. Use only as a last case scenario.
+*WARNING: Use with caution, a thread.sleep can be unreliable and slow down tests. All functions have a dynamic 20s wait time to poll the DOM. Use only as a last case scenario. Try using wait_for_element_visibility if you are waiting for an element to appear in the DOM. 
 
 #### *Example:*<br> 
 ```Python
