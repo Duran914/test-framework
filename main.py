@@ -19,7 +19,7 @@ import platform
 
 
 class USI:
-        def __init__(self, company, campaign_type, site_id, driver="chrome", device_type="desktop", headless=False, log_file=True, error_report=[], border_color="green"):
+        def __init__(self, company, campaign_type, site_id, driver="chrome", device_type="desktop", headless=False, log_file=True, error_report=[]):
                 self.company = company
                 self.campaign_type = campaign_type
                 self.site_id = site_id
@@ -28,7 +28,6 @@ class USI:
                 self.headless = headless
                 self.log_file = log_file
                 self.error_report = error_report
-                self.border_color = border_color
 
 
         # output campaign info and pass/fail. (will log test to a txt later)
@@ -170,19 +169,19 @@ class USI:
         '''Internal function that add a 5px green or other specified color to see what div is being interacted with.
            Strictly for visuals pf what element is being interacted with, default color is green; red and None is also an acceptable values.  
         '''
-        def _border_color(self, target_element):
-                if self.headless == True:
-                        pass
-                else:
-                        if self.border_color == "" or self.border_color == None:
-                                pass
-                        elif self.border_color == "green":
-                                self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #009900'")
-                        elif self.border_color == "red":
-                                self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #e60000'")
-                        else:
-                                USI._terminate_script(self, name="Border color", 
-                                message=f"{self.border_color} is not a valid color. Set border_color to green, red or None")
+        # def _border_color(self, target_element):
+        #         if self.headless == True:
+        #                 pass
+        #         else:
+        #                 if self.border_color == "" or self.border_color == None:
+        #                         pass
+        #                 elif self.border_color == "green":
+        #                         self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #009900'")
+        #                 elif self.border_color == "red":
+        #                         self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #e60000'")
+        #                 else:
+        #                         USI._terminate_script(self, name="Border color", 
+        #                         message=f"{self.border_color} is not a valid color. Set border_color to green, red or None")
 
 
         # Navigates to url: Accepts 1 string argmuent
@@ -210,7 +209,6 @@ class USI:
                                                         self.browser.find_elements_by_css_selector(button)[node_index].click()
                                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
                                                 else:
-                                                        USI._border_color(self, target_element=button)
                                                         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
                                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
                                         except Exception:
@@ -255,8 +253,6 @@ class USI:
                 if locate_by == "css":
                         for name, value in input_data.items():
                                 try:
-                                        # self.browser.find_element_by_css_selector(value[0]).send_keys(value[1])
-                                        USI._border_color(self, target_element=value[0])
                                         WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, value[0]))).send_keys(value[1])
                                         USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
                                 except Exception:
@@ -281,7 +277,6 @@ class USI:
                         USI._precheck_data(self, item, data_type)
 
                 try:
-                        USI._border_color(self, target_element=selector)
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
                         USI._logger(self, message=f"LC modal: {email} => " + colored("Entered into LC", color="green"))
                 except Exception:
@@ -306,7 +301,6 @@ class USI:
                                 except Exception:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
-                                USI._border_color(self, target_element=visible_element)
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
                                 USI._logger(self, message="Visible element => " + colored("Hovered", color="green") +
                                 "\n" + f"{name} => " + colored("clicked", color="green"))
@@ -335,7 +329,6 @@ class USI:
                 USI._precheck_data(self, selector, data_type)
                 for _ in range(clicks):
                         try:
-                                USI._border_color(self, target_element=selector)
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                                 USI._logger(self, message="CTA => " + colored("Clicked", color="green"))
                         except Exception:
@@ -357,12 +350,10 @@ class USI:
                 for name, value in select_data.items():
                         if select_by == "value":
                                 select = Select(self.browser.find_element_by_css_selector(value[0]))
-                                USI._border_color(self, target_element=value[0])
                                 select.select_by_value(value[1])
                                 USI._logger(self, message=f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
                         elif select_by == "text":
                                 select= Select(self.browser.find_element_by_css_selector(value[0]))
-                                USI._border_color(self, target_element=value[1])
                                 select.select_by_visible_text(value[1])
                                 USI._logger(self, message=f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
 
@@ -438,7 +429,6 @@ class USI:
                         USI._precheck_data(self, item, data_type)
 
                 try:
-                        USI._border_color(self, target_element=tab)
                         USI.click(self, buttons={"USI tab":tab})
                 except Exception:
                         USI._terminate_script(self, name="tab", element="#usi_tab")
@@ -521,7 +511,7 @@ class USI:
                  discount_data = {
                  "Subtotal":"#selector",
                  "Discount":"#selector",
-                 "New Total": "#selector"
+                 "Grand total": "#selector"
                  }
         )
         '''
@@ -577,6 +567,10 @@ class USI:
                 elif promo_data[0] == "fixed":
                         desired_value = totals[0] - (promo_data[1] * 100)
 
+                # if shipping != "":
+                #        desired_value = desired_value + shipping
+
+
                 # used to account for site that may round up or down 
                 low_threshold = int(desired_value) - 1
                 high_threshold = int(desired_value) + 2
@@ -596,7 +590,6 @@ class USI:
 
                 if locate_by == "css":
                         try:
-                                USI._border_color(self, target_element=selector)
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
                                 USI._logger(self, message="Modal => " + colored("Closed", "green"))
                         except Exception:
@@ -725,7 +718,6 @@ class USI:
                 if locate_by == "css":
                         for name, selector in checkbox_data.items():
                                 try:
-                                        USI._border_color(self, target_element=selector)
                                         self.browser.find_element_by_css_selector(selector).click()
                                         USI._logger(self, message=f"{name} => {selector} " + colored("Checked", "green"))
                                 except Exception:
@@ -759,3 +751,4 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
+        

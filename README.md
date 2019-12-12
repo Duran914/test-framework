@@ -19,7 +19,7 @@
 
 * Knowledge of HTML, CSS and Javascript.
 * Python 3 knowledge is helpful but NOT necessary, any programming language with basic knowledge such as arrays, objects, arguemnts and parameters will do. 
-* Intermediate knowledge of traversing the DOM, CSS selectors, and XPATH.
+* Strong knowledge of traversing the DOM, CSS selectors, and XPATH.
 * Knowledge of navigating a browser console.
 * Comfortable working in a terminal or windows cmd enviroment. 
 
@@ -109,14 +109,13 @@ Possible Errors Include:
 
 Before writing a test script you must create an instance of the USI class for EVERY campaign.
 ```Python
-ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False, log_file=True, border_color="green")
+ace_TT_12345 = main.USI("Ace", "TT", "12345", driver="chrome", device_type="desktop", headless=False, log_file=True)
 ```
 * Requires company name, campaign type, site id.
 * driver can accept "chrome", "firefox", "safari"; default is set to "chrome".
 * device_type accepts "desktop" or "mobile";  default is "desktop". Mobile execution only works on chrome. 
 * headless accepts a boolean of "True" or "False"; default is False. Only chrome and firefox support headless.
 * log_file will write errors to a log file. Accepts a boolean of true or false. Default is set to True.
-* border_color will add a border color around the element that is being interacted with when possible. 
 Acceptable values are "green", "red", and None. Strictly for visual.
 
 ### initiate_test()
