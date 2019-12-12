@@ -43,18 +43,32 @@ python3 my_first_test.py
 ```
 
 
-#### Sample TT test
+#### Sample Lead Capture Test
 ```Python
 #### Alwyas import main ####
 import main
 
-teleStream = main.USI("telestream", "TT", "25502", driver="chrome", device_type="desktop", headless=False)
-teleStream.initiate_test()
-teleStream.navigate_url("http://www.telestream.net/wirecast/store.asp")
-teleStream.click({"Mac add button":"#OneMac"})
-teleStream.launch_modal()
-teleStream.click_cta()
-teleStream.shutdown()
+try:
+        inkjets_lc_26632 = main.USI("123Inkjets", "LC", "26632", headless=False, log_file=False)
+        inkjets_lc_26632.initiate_test()
+        inkjets_lc_26632.navigate_url("https://www.123inkjets.com/Samsung/Compatible/Laser-Toner/Drum/MLT-R116/22770-Product.html?datahound=1")
+        inkjets_lc_26632.launch_modal()
+        inkjets_lc_26632.lc_input("jdran@mail.com")
+        inkjets_lc_26632.click_cta()
+        inkjets_lc_26632.email_link_follow("lc", "/html/body/div[2]/div[1]/table/tbody/tr/td/table/tbody/tr/td/a")
+        inkjets_lc_26632.click({
+                "First HP item":".products-grid ul li.item:first-child .hide480 li:first-child a",
+                "Add to cart":".add_to_cart_btn",
+                "View Cart":".cart-container .button_primary"
+        })
+        inkjets_lc_26632.coupon_validation(
+                validate_by="element_message",
+                target_element=".messages span[ng-bind='messaging.success']",
+                message_text="COUPON CODE \"Q4INK123\" WAS APPLIED."
+                )
+        inkjets_lc_26632.shutdown()  
+except BaseException:
+        pass
 ```
 
 #### Running multiple tests
@@ -63,28 +77,32 @@ test must be wrapped in a try/execpt block.
 ```Python
 
 # Test Name 1 
-try:
-        teleStream_tt_25502 = main.USI("Telestream", "TT", "25502", driver="chrome")
-        teleStream_tt_25502.initiate_test()
-        teleStream_tt_25502.navigate_url("http://www.telestream.net/wirecast/store.asp")
-        teleStream_tt_25502.click({"Add to cart button":"#OneMac"})
-        teleStream_tt_25502.launch_modal()
-        teleStream_tt_25502.click_cta()
-        teleStream_tt_25502.shutdown()
-except BaseException:
-        pass
+ try:
+         company_tt_12345 = USI("Company", "TT", "12345", headless=True, log_file=False)
+         comcompany_tt_12345pany.initiate_test()
+         company_tt_12345.navigate_url("wwww.company.com")
+         company_tt_12345.launch_modal()
+         company_tt_12345.click_cta()
+         company_tt_12345.shutdown()  
+ except BaseException:
+         pass
 
 # Test Name 2 
 try:
-        ...
-        ...
+         company_lc_12345 = USI("Company", "LC", "678910", headless=True, log_file=False)
+         company_lc_12345.initiate_test()
+         company_lc_12345.navigate_url("wwww.companytwo.com")
+         company_lc_12345.launch_modal()
+         company_lc_12345.lc_input("emailName@mail.com")
+         company_lc_12345.click_cta()
+         company_lc_12345.shutdown()  
 except BaseException:
         pass
 ```
 
 #### Succesful Test Output
 A succesful test script will display a green Test Complete message.
-![Succesful Demo](https://raw.githubusercontent.com/Duran914/images/master/demo_tt.png)
+![Succesful Demo](https://raw.githubusercontent.com/Duran914/images/master/demo_lc.png)
 
 
 #### Failed Test Output
@@ -97,7 +115,7 @@ Possible Errors Include:
   * Campaign launch rules not being met.
   * Selenium errors. 
 
-![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_failed.png)
+![Failed demo](https://raw.githubusercontent.com/Duran914/images/master/demo_lc_fail.png)
 
 
 ### Log file output 
