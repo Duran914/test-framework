@@ -16,6 +16,7 @@ import sys
 from datetime import date
 import re
 import platform
+import datetime
 
 
 class USI:
@@ -366,7 +367,7 @@ class USI:
                         USI.halt_execution(self, sec=5)
                         try:
                                 self.browser.execute_script("usi_js.display();")
-                                USI._logger(self, message="USI Modal => " + colored("Launched", color="green"))
+                                USI._logger(self, message="USI modal => " + colored("Launched", color="green"))
                         except JavascriptException:
                                 USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
                 elif proactive == True:
@@ -379,7 +380,6 @@ class USI:
                                         USI._logger(self, message="USI Modal => " + colored("Launched", color="green"))
                                 except JavascriptException:
                                         USI._terminate_script(self, name="USI Modal", message="Proactive Launch conditions not met", element=".usi_display")
-
 
         # Executes any javascript code
         def execute_js(self, script, name="JS code"):
@@ -467,8 +467,8 @@ class USI:
         def coupon_validation(self, validate_by, target_element, message_text="", locate_by="css"):
                 data_type = ["coupon_validation", str]
                 validate_items = [validate_by, target_element, message_text]
-                for item in validate_items:
-                        USI._precheck_data(self, item, data_type)
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+
 
                 if locate_by == "css":
                         try:
@@ -643,9 +643,8 @@ class USI:
         def email_link_follow(self, campaign_type, element_xpath, override_session_name="", new_window=True):
                 data_type = ["usi_email_link", str]
                 validate_items = [campaign_type, element_xpath]
-                
-                for item in validate_items:
-                        USI._precheck_data(self, item, data_type)
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+        
 
                 if campaign_type.lower() == "lc":
                         cookie_session_name = "usi_sess"
@@ -666,7 +665,7 @@ class USI:
                                 USI._terminate_script(self, name="Email url", element=campaign_type, message="Session not found")
 
                 try:
-                        USI.click(self, buttons={"Email Hero Image":element_xpath}, locate_by="xpath")
+                        USI.click(self, buttons={"Email hero link":element_xpath}, locate_by="xpath")
                 except Exception:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
 
@@ -729,7 +728,38 @@ class USI:
                                         USI._logger(self, message=f"{name} => {selector} " + colored("Checked", "green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
-                
+        
+
+        # checks if a campaign is under the correct sale window for launch
+        # Accepts an two string arguments of a state date and an end date
+        def set_date_window(self, start_date, end_date):
+                data_type = ["set_date_window", str]
+                validate_items = [start_date, end_date]  
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+
+
+                today = datetime.datetime.now()
+                start_list = start_date.split("-")
+                end_list = end_date.split("-")
+
+                # Convert to INTs 
+                start_list = [int(x) for x in start_list]
+                end_list = [int(x) for x in end_list]
+
+                # Date values to check against
+                starting_date = datetime.datetime(start_list[0],start_list[1], start_list[2])
+                ending_date = datetime.datetime(end_list[0],end_list[1], end_list[2])
+
+                if ending_date < starting_date:
+                        USI._log_error(self, err={"value":  f"End date => {end_date} cannot be eariler then specified start date {start_date}"})
+
+                if starting_date <= today <= ending_date:
+                        pass
+                elif starting_date > today:
+                        USI._terminate_script(self, name="Date", element=today, message="Sale window for this campaign has not yet began", fail_pass=True)
+                else:
+                        USI._terminate_script(self, name="Date", element=today, message="Sale window for this campaign had ended", fail_pass=True)
+
 
         # Takes screenshot
         def take_screenshot(self, screenshot_name="default.png"):
@@ -751,4 +781,3 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
-        
