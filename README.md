@@ -362,6 +362,20 @@ execute_js('alert("Hello World");', "Alert box for hello world")
 
 #
 
+### set_date_window()
+The set_date_window function checks if a campaign is under the correct sale window date range.
+Function should be called immediately after the initiate_test() function.
+When a campaign is out of the specified date range, the test will be aborted. 
+
+
+#### *Example:*<br> 
+ ```Python
+set_date_window(start_date="2019-12-10", end_date="2019-12-20")
+ ```
+ * Accepts two string arguments of a state date and an end date. Date format should be year-month-day; ex. 2019-12-20
+
+#
+
 ### take_screenshot()
 The take_screenshot function takes a screenshot of the screen, .png file type. 
 
