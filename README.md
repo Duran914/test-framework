@@ -79,7 +79,7 @@ test must be wrapped in a try/execpt block.
 # Test Name 1 
  try:
          company_tt_12345 = USI("Company", "TT", "12345", headless=True, log_file=False)
-         comcompany_tt_12345pany.initiate_test()
+         company_tt_12345.initiate_test()
          company_tt_12345.navigate_url("wwww.company.com")
          company_tt_12345.launch_modal()
          company_tt_12345.click_cta()
