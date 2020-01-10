@@ -61,6 +61,7 @@ class USI:
                 if self.driver == "chrome":
                         # Disables notifications on chrome 
                         chrome_options.add_argument("--disable-notifications")
+                        chrome_options.add_argument("--window-size=1920x1080")
 
                         # Runs broswer in headless mode
                         if self.headless == True:
@@ -198,12 +199,12 @@ class USI:
 
         # button click: accepts a dict of button/link names & selector
                 # {'Add to cart button':'#cart'}
-        def click(self, buttons, locate_by="css", node_index=-1):
+        def click(self, element_data, locate_by="css", node_index=-1):
                         data_type = ["click", dict]
-                        USI._precheck_data(self, buttons, data_type, locate_by)
+                        USI._precheck_data(self, element_data, data_type, locate_by)
                         
                         if locate_by == "css":
-                                for name, button in buttons.items():
+                                for name, button in element_data.items():
                                         try:
                                                 if node_index >= 0:
                                                         sleep(5) # give webdriver time to parse nodelist
@@ -216,7 +217,7 @@ class USI:
                                                 USI._terminate_script(self, name=name, element=button)
 
                         elif locate_by == "xpath":
-                                for name, button in buttons.items():
+                                for name, button in element_data.items():
                                         try: 
                                                 self.browser.find_element_by_xpath(button).click()
                                                 USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
@@ -429,7 +430,7 @@ class USI:
                         USI._precheck_data(self, item, data_type)
 
                 try:
-                        USI.click(self, buttons={"USI tab":tab})
+                        USI.click(self, element_data={"USI tab":tab})
                 except Exception:
                         USI._terminate_script(self, name="tab", element="#usi_tab")
                 
@@ -665,7 +666,7 @@ class USI:
                                 USI._terminate_script(self, name="Email url", element=campaign_type, message="Session not found")
 
                 try:
-                        USI.click(self, buttons={"Email hero link":element_xpath}, locate_by="xpath")
+                        USI.click(self, element_data={"Email hero link":element_xpath}, locate_by="xpath")
                 except Exception:
                         USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
 
