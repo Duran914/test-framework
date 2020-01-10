@@ -123,7 +123,7 @@ Possible Errors Include:
 * The log file will contain the same output as a failed test output would in the terminal.
 * Log file writting can be toggled within initiate_test() while developing a test script. 
 
-## Test API 
+## USI API 
 
 Before writing a test script you must create an instance of the USI class for EVERY campaign.
 ```Python
@@ -168,7 +168,7 @@ click({"Add to Cart Button":"#addBtn"}, locate_by="css", node_index="")
 ```
 * Accepts three arguements
   * Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
-  * locate_by requires a string argument of either "css" or "xpath"; css is the default
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default.
   * node_index accepts a number argument, use when a desired element is returning a node list. node_index=0 will click on the first element in the node list. 
   Hint: Use document.querySelectorAll() in the console to determine if an element is returning a node list. 
 
@@ -222,7 +222,7 @@ The lc_input function inserts an email address into an LC modal.
 ```Python
 lc_input("jdran@mail.com", selector="#usi_content #usi_email_container #usi_email")
 ```
-* Requires a string argument of an email address 
+* Requires a string argument of an email address. 
 * Accpets a default argument of a selector, default is "#usi_content #usi_email_container #usi_email" and should
 for most LCs.
 
@@ -279,14 +279,14 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
     * validate_by="element_text" checks for validation by an element selector and string of text.
   * target_element accepts a string argument of a selector.
   * message_text accepts a string of text to check validation.  An argument must be passed when validating by "text" or "element_text".
-  * locate_by requires a string argument of either "css" or "xpath"; css is the default
+  * locate_by requires a string argument of either "css" or "xpath"; css is the default.
 
 #
 
 #
 
  ### discount_check()
- The discount_check function calculates discounts and subtotals. Purpose is to check if the correct promotion amount
+ The discount_check function calculates discounts and subtotals. Purpose is to check if the correct promotion amount.
  is being given. The coupon_validation() is normally sufficient to check a coupon code's vadility, use only if coupon_validation is not sufficient.
 
  #### *Example:*<br> 
@@ -294,8 +294,8 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 discount_check(promo_data=["percent", .10], discount_data={"Subtotal":"#selector","Discount":"#selector","Grand Total":"#selector"})
  ```
  * Accepts 2 arguements promo_date and discount_data
-   * promo_data accepts a list of string argument of either "precent" for a percentage discount or "fixed" for a fixed dollar amount
-   * dicount_data accepts a dictionary, keys should be Subtotal, Discount and Grand total with thier value being thier associated css selectors
+   * promo_data accepts a list of string argument of either "precent" for a percentage discount or "fixed" for a fixed dollar amount.
+   * dicount_data accepts a dictionary, keys should be Subtotal, Discount and Grand total with thier value being thier associated css selectors.
 
  #
 
@@ -325,17 +325,17 @@ usi_email_link(campaign_type="lc", element_xpath="/html/body/table/tbody/tr/td/t
 
 #
 
-### wait_for_element_visibility()
-The wait_for_element_visibility function checks if a desired element is present on the DOM and visible on page.
+### check_element_visibility()
+The check_element_visibility function checks if a desired element is present on the DOM and visible on page.
 
 #### *Example:*<br> 
 ```Python
-wait_for_element_visibility(element_name="Login Modal", selector="#login-modal", locate_by="css")
+check_element_visibility(element_name="Login Modal", selector="#login-modal", locate_by="css")
 ```
 * Accepts 3 arguements
   * element_name accepts a string argument of a name for the element.
-  * selector accepts a string argument of the element selector class/id
-  * locate_by accpets a string arguemnt of either css or xpath, default is css
+  * selector accepts a string argument of the element selector class/id.
+  * locate_by accpets a string arguemnt of either css or xpath, default is css.
 
 #
 
@@ -358,7 +358,7 @@ The execute_js function will execute javascript.
 execute_js('alert("Hello World");', "Alert box for hello world")
 ```
 * Requires a string of JS code.
-* An optional string argument of name can be passed to specify what the javascript's code intended action is. Default will be "JS code"
+* An optional string argument of name can be passed to specify what the javascript's code intended action is. Default will be "JS code".
 
 #
 
@@ -372,7 +372,7 @@ When a campaign is out of the specified date range, the test will be aborted.
  ```Python
 set_date_window(start_date="2019-12-10", end_date="2019-12-20")
  ```
- * Accepts two string arguments of a state date and an end date. Date format should be year-month-day; ex. 2019-12-20
+ * Accepts two string arguments of a state date and an end date. Date format should be year-month-day; ex. 2019-12-20.
 
 #
 
@@ -383,7 +383,7 @@ The take_screenshot function takes a screenshot of the screen, .png file type.
 ```Python
 take_screenshot("screenshot_name")
 ```
-* Accepts a string of the screenshot name
+* Accepts a string of the screenshot name.
 
 #
 
@@ -464,5 +464,5 @@ The shutdown function gracefully shuts down the selenium webdriver. Must be adde
 ```Python
 shutdown()
 ```
-* No arguments are accepted
+* No arguments are accepted.
 
