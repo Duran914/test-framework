@@ -607,7 +607,7 @@ class USI:
             Can be used as a condition for another action. 
             Ex. wait_for_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
         '''
-        def wait_for_element_visibility(self, element_name, selector, text="", locate_by="css"):
+        def check_element_visibility(self, element_name, selector, text="", locate_by="css"):
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
@@ -782,3 +782,25 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
+try:
+        bakblade_tt_26736 = USI("BAKblade", "TT", "26736", headless=True, log_file=False)
+        bakblade_tt_26736.initiate_test()
+        bakblade_tt_26736.navigate_url("https://bakblade.com/?usi_enable=1")
+        bakblade_tt_26736.click({
+                "BAKBLADE 2.0 ELITE":"#featured-products-inner .productbox:first-child input",
+                "Close pop up":"#desktop-close-icon",
+                "Next step":".takeMeText",
+                "No thanks":"#skiptext"
+        })
+        bakblade_tt_26736.launch_modal()
+        bakblade_tt_26736.click_cta()
+        bakblade_tt_26736.boostbar_check()
+        bakblade_tt_26736.click({"Checkout button":"input[name='checkout']"})
+        bakblade_tt_26736.coupon_validation(
+                validate_by="element_message",
+                target_element=".total-line__name .reduction-code .reduction-code__text",
+                message_text="ACTFAST10"
+        )
+        bakblade_tt_26736.shutdown()  
+except BaseException:
+        pass
