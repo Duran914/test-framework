@@ -168,24 +168,6 @@ class USI:
                         return cookie_value
 
 
-        '''Internal function that add a 5px green or other specified color to see what div is being interacted with.
-           Strictly for visuals pf what element is being interacted with, default color is green; red and None is also an acceptable values.  
-        '''
-        # def _border_color(self, target_element):
-        #         if self.headless == True:
-        #                 pass
-        #         else:
-        #                 if self.border_color == "" or self.border_color == None:
-        #                         pass
-        #                 elif self.border_color == "green":
-        #                         self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #009900'")
-        #                 elif self.border_color == "red":
-        #                         self.browser.execute_script(f"document.querySelector('{target_element}').style.border='5px solid #e60000'")
-        #                 else:
-        #                         USI._terminate_script(self, name="Border color", 
-        #                         message=f"{self.border_color} is not a valid color. Set border_color to green, red or None")
-
-
         # Navigates to url: Accepts 1 string argmuent
         def navigate_url(self, url):
                 try:
