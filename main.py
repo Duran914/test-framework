@@ -71,7 +71,7 @@ class USI:
                         try:
                                 self.browser = webdriver.Chrome(executable_path=config.chrome_driver, options=chrome_options)
                         except SessionNotCreatedException as msg:
-                                USI._terminate_script(self, name="Chrome Webdriver", message=msg)
+                                USI._terminate_script(self, name="Chrome Webdriver", message=f"{msg}. Download new Chrome driver at https://chromedriver.chromium.org/" )
 
                 elif self.driver == "firefox":
                         # Disables notifications on firefox
