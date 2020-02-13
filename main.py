@@ -656,6 +656,54 @@ class USI:
                 if new_window == True:
                         self.browser.switch_to.window(self.browser.window_handles[1])
 
+
+        ''' The check_product_rec function  checking if a our USI product rec's item name/price matches up 
+        with the onsite name/price after CTA and redirect to product page. 
+                check_product_rec(site_product_data=[".onsite_redirect_name", ".onsite_redirect_price"], 
+                        usi_product_selectors=[".usi_product_name", ".usi_product_price"],
+                        cta_selector=".usi_product_cta1" )        
+                '''
+
+        def check_product_rec(self, usi_product_selectors, site_product_data, new_window=True, cta_selector="#usi_content .usi_submitbutton"):
+                data_type = ["check_product_rec", list]
+                validate_items = [usi_product_selectors, site_product_data]
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+
+                # specifies whether to test both name and price or just name
+                test_type = "both"
+                if usi_product_selectors[0] != None and usi_product_selectors[1] != None:
+                        product_rec_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, usi_product_selectors[0]))).get_attribute("innerText")
+                        product_rec_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, usi_product_selectors[1]))).get_attribute("innerText")
+                elif usi_product_selectors[1] == None:
+                        product_rec_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, usi_product_selectors[0]))).get_attribute("innerText")
+                        test_type = "name_only"
+
+                USI.click_cta(self, selector=cta_selector)
+
+                if new_window == True:
+                        self.browser.switch_to.window(self.browser.window_handles[1])
+
+                if test_type == "name_only":
+                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[0]))).get_attribute("innerText")
+                        
+                        if product_rec_name == onsite_product_name:
+                                USI._logger(self, message=f"Product Rec name => onsite product name {onsite_product_name} " + colored(" Correct", "green"))
+                        else:
+                                USI._terminate_script(self, name="Product Rec USI product name => ", message=F"Not matching onsite product name")
+                else:
+                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[0]))).get_attribute("innerText")
+                        onsite_product_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[1]))).get_attribute("innerText")
+
+                        if product_rec_name == onsite_product_name and product_rec_price == onsite_product_price:
+                                USI._logger(self, message=f"Product Rec name & price => " + colored("Correct", "green"))
+                        elif product_rec_name == onsite_product_name and product_rec_price != onsite_product_price:
+                                USI._terminate_script(self, name="Product Rec price => ", message="Not matching onsite product price")
+                        elif product_rec_name != onsite_product_name and product_rec_price == onsite_product_price:
+                                USI._terminate_script(self, name="Product Rec name => ", message="Not matching onsite product name")
+                        elif product_rec_name != onsite_product_name and product_rec_price != onsite_product_price:
+                                USI._terminate_script(self, name="Product Rec name & price => ", message="Not matching onsite name/price")
+
+        
         ''' 
         switch_tab will move to a desired tab when multiple are open.
         Default value is 1 from the left.(0 is considered the first tab)
