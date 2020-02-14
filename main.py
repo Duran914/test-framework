@@ -659,14 +659,14 @@ class USI:
 
         ''' The check_product_rec function  checking if a our USI product rec's item name/price matches up 
         with the onsite name/price after CTA and redirect to product page. 
-                check_product_rec(site_product_data=[".onsite_redirect_name", ".onsite_redirect_price"], 
+                check_product_rec(site_product_selectors=[".onsite_redirect_name", ".onsite_redirect_price"], 
                         usi_product_selectors=[".usi_product_name", ".usi_product_price"],
                         cta_selector=".usi_product_cta1" )        
                 '''
 
-        def check_product_rec(self, usi_product_selectors, site_product_data, new_window=True, cta_selector="#usi_content .usi_submitbutton"):
+        def check_product_rec(self, usi_product_selectors, site_product_selectors, new_window=True, cta_selector="#usi_content .usi_submitbutton"):
                 data_type = ["check_product_rec", list]
-                validate_items = [usi_product_selectors, site_product_data]
+                validate_items = [usi_product_selectors, site_product_selectors]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
 
                 # specifies whether to test both name and price or just name
@@ -684,15 +684,15 @@ class USI:
                         self.browser.switch_to.window(self.browser.window_handles[1])
 
                 if test_type == "name_only":
-                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[0]))).get_attribute("innerText")
+                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[0]))).get_attribute("innerText")
                         
                         if product_rec_name == onsite_product_name:
                                 USI._logger(self, message=f"Product Rec name => onsite product name {onsite_product_name} " + colored(" Correct", "green"))
                         else:
                                 USI._terminate_script(self, name="Product Rec USI product name => ", message=F"Not matching onsite product name")
                 else:
-                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[0]))).get_attribute("innerText")
-                        onsite_product_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_data[1]))).get_attribute("innerText")
+                        onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[0]))).get_attribute("innerText")
+                        onsite_product_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[1]))).get_attribute("innerText")
 
                         if product_rec_name == onsite_product_name and product_rec_price == onsite_product_price:
                                 USI._logger(self, message=f"Product Rec name & price => " + colored("Correct", "green"))
@@ -812,3 +812,25 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
+
+try:
+        purehemp_tt_29083 = USI("purehempbotanicals", "TT", "29083", headless=True, log_file=False)
+        purehemp_tt_29083.initiate_test()
+        purehemp_tt_29083.navigate_url("https://purehempbotanicals.com/?usi_enable=1&datahound=1")
+        purehemp_tt_29083.lc_input("jdran@mail.com", selector="#usi_email")
+        purehemp_tt_29083.lc_input("jdran555@mail.com", selector="#usi_email2")
+        purehemp_tt_29083.click_cta(clicks="2")
+        purehemp_tt_29083.email_link_follow("lc", "/html/body/div/div[1]/table/tbody/tr/td/div/table/tbody/tr/td/table/tbody/tr/td/a")
+        purehemp_tt_29083.boostbar_check()
+        purehemp_tt_29083.click({
+                "First item":".product-type-simple.et_pb_shop_item_0_0 > a",
+                "Add to cart":".single_add_to_cart_button"
+        })
+        purehemp_tt_29083.coupon_validation(
+                validate_by="element_message", 
+                message_text="Coupon: purehemp15", 
+                target_element=".cart-discount.coupon-purehemp15 th"
+        )
+        purehemp_tt_29083.shutdown()  
+except BaseException:
+        pass
