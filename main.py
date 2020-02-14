@@ -812,25 +812,3 @@ class USI:
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
 
-
-try:
-        purehemp_tt_29083 = USI("purehempbotanicals", "TT", "29083", headless=True, log_file=False)
-        purehemp_tt_29083.initiate_test()
-        purehemp_tt_29083.navigate_url("https://purehempbotanicals.com/?usi_enable=1&datahound=1")
-        purehemp_tt_29083.lc_input("jdran@mail.com", selector="#usi_email")
-        purehemp_tt_29083.lc_input("jdran555@mail.com", selector="#usi_email2")
-        purehemp_tt_29083.click_cta(clicks="2")
-        purehemp_tt_29083.email_link_follow("lc", "/html/body/div/div[1]/table/tbody/tr/td/div/table/tbody/tr/td/table/tbody/tr/td/a")
-        purehemp_tt_29083.boostbar_check()
-        purehemp_tt_29083.click({
-                "First item":".product-type-simple.et_pb_shop_item_0_0 > a",
-                "Add to cart":".single_add_to_cart_button"
-        })
-        purehemp_tt_29083.coupon_validation(
-                validate_by="element_message", 
-                message_text="Coupon: purehemp15", 
-                target_element=".cart-discount.coupon-purehemp15 th"
-        )
-        purehemp_tt_29083.shutdown()  
-except BaseException:
-        pass
