@@ -96,6 +96,11 @@ try:
                 "Clickable element":"#css-selector",
                 "Clickable element":"#css-selector"
                 })
+        company_rec_12348.check_product_rec(
+                usi_product_selectors=[".usi_product_name", ".usi_product_price"],
+                site_product_selectors=[".onsite_name", ".onsite_price"], 
+                cta_selector=".usi_product_cta1" 
+                ) 
         company_rec_12348.coupon_validation(
                 validate_by="type_of_validation",
                 message_text="String of text",

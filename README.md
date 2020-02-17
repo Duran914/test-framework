@@ -285,6 +285,25 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 
 #
 
+ ### check_product_rec()
+The check_product_rec function checks if a our USI product rec's item name/price matches up 
+with the onsite name/price after CTA has redirect to its respective product page.
+
+ #### *Example:*<br> 
+ ```Python
+ check_product_rec(usi_product_selectors=[".usi_product_name", ".usi_product_price"], site_product_selectors=[".onsite_name", ".onsite_price"], 
+cta_selector=".usi_product_cta1", new_window=True) 
+ ```
+ * Accepts 4 arguements
+   * usi_product_selector accepts a list of two css selectors, name selector and price selector from our USI modal
+   * site_product_selectors accpets a list of the css selector of the onsite name and price of the product you are checking against. Scrape these selectors from the page that the CTA has redirected you too.
+   * cta_selector accpets a string argument of a the CTA css selector for a product rec item.
+   * new_window accpets a boolean. Set True if rec CTA open in a new window, False for the same window. True is the default
+
+#
+
+#
+
  ### discount_check()
  The discount_check function calculates discounts and subtotals. Purpose is to check if the correct promotion amount.
  is being given. The coupon_validation() is normally sufficient to check a coupon code's vadility, use only if coupon_validation is not sufficient.
