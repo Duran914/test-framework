@@ -166,7 +166,7 @@ The click function clicks on any specifed link, button etc.
 ```Python
 click({"Add to Cart Button":"#addBtn"}, locate_by="css", node_index="")
 ```
-* Accepts three arguements
+* Accepts three arguments 
   * Accepts a dictionary (object) of a element name as a key and a selector as its value. Mulitple objects can be passed if clicking through numerous elements. 
   * locate_by requires a string argument of either "css" or "xpath"; css is the default.
   * node_index accepts a number argument, use when a desired element is returning a node list. node_index=0 will click on the first element in the node list. 
@@ -182,7 +182,7 @@ The hover_and_click function hovers over any specifed element and clicks the des
 ```Python
 hover_and_click({"checkout button": ['#menuBar', '#dropDown a'}, locate_by="css")
 ```
-* Accepts two arguements
+* Accepts two arguments 
   * A dictionary (object) of a element name as a key and an array of the visible element selector and the non-visible selector.
   * locate_by requires a string argument of either "css" or "xpath"; css is the default
 
@@ -209,7 +209,7 @@ The input_text function inserts text into any input field.
 ```Python
 input_text({"Email-address": ["#formFirstname", "Johnny"]}, locate_by="css")
 ```
-* Accepts two arguements
+* Accepts two arguments 
   * A dictionary (object) of a element name as a key and an array of selector & text as values. Mulitple objects can be passed if needed, such as filling out numerous input fields.
   * locate_by requires a string argument of either "css" or "xpath"; css is the default
 
@@ -286,19 +286,19 @@ coupon_validation(validate_by="element_text", target_element=".coupon-valid", me
 #
 
  ### check_product_rec()
-The check_product_rec function checks if a our USI product rec's item name/price matches up 
-with the onsite name/price after CTA has redirect to its respective product page.
+The check_product_rec function checks if our USI product rec's item name/price matches up 
+with the onsite name/price after CTA has redirected to its respective product page.
 
  #### *Example:*<br> 
  ```Python
  check_product_rec(usi_product_selectors=[".usi_product_name", ".usi_product_price"], site_product_selectors=[".onsite_name", ".onsite_price"], 
 cta_selector=".usi_product_cta1", new_window=True) 
  ```
- * Accepts 4 arguements
+ * Accepts 4 arguments 
    * usi_product_selector accepts a list of two css selectors, name selector and price selector from our USI modal
    * site_product_selectors accpets a list of the css selector of the onsite name and price of the product you are checking against. Scrape these selectors from the page that the CTA has redirected you too.
    * cta_selector accpets a string argument of a the CTA css selector for a product rec item.
-   * new_window accpets a boolean. Set True if rec CTA open in a new window, False for the same window. True is the default
+   * new_window accpets a boolean. Set True if rec CTA open in a new window, False for the same window, True is the default
 
 #
 
@@ -312,7 +312,7 @@ cta_selector=".usi_product_cta1", new_window=True)
  ```Python
 discount_check(promo_data=["percent", .10], discount_data={"Subtotal":"#selector","Discount":"#selector","Grand Total":"#selector"})
  ```
- * Accepts 2 arguements promo_date and discount_data
+ * Accepts 2 arguments  promo_date and discount_data
    * promo_data accepts a list of string argument of either "precent" for a percentage discount or "fixed" for a fixed dollar amount.
    * dicount_data accepts a dictionary, keys should be Subtotal, Discount and Grand total with thier value being thier associated css selectors.
 
@@ -351,7 +351,7 @@ The check_element_visibility function checks if a desired element is present on 
 ```Python
 check_element_visibility(element_name="Login Modal", selector="#login-modal", locate_by="css")
 ```
-* Accepts 3 arguements
+* Accepts 3 arguments 
   * element_name accepts a string argument of a name for the element.
   * selector accepts a string argument of the element selector class/id.
   * locate_by accpets a string arguemnt of either css or xpath, default is css.
@@ -424,7 +424,7 @@ The tab_click function toggles a usi TT or LC tab
 ```Python
 tab_click(decision_selector=".usi_tab_opened", tab="#usi_tab")
 ```
-* Accepts two default arguements
+* Accepts two default arguments 
   * decision_selector checks for an exepected classname/id after a tab is clicked. Default ".usi_tab_opened", but can accept a different argument.
   * tab has a default seletor of "#usi_tab" for a usi modal tab but can accept a different selector if needed.
 
@@ -448,7 +448,7 @@ The switch_tab function will change to a specific tab when multiple are open. Ta
 ```Python
 witch_tab(tab=1)
 ```
-* Accepts a single arguement
+* Accepts a single argument
   *  tab accepts a int argument of the desired tab you want to switch to. 1 is the default tab. 
 
 #
