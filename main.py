@@ -40,12 +40,10 @@ class USI:
                 available_browsers = {"chrome", "firefox", "safari"}
 
                 if self.driver not in available_browsers:
-                        USI._log_error(self, err={"value": f"{self.driver} is not valid. Please enter a valid browser"})
+                        USI._terminate_script(self, name=f"{self.driver}: ", message="In-valid driver. Please enter a valid browser")
 
                 if self.device_type != "desktop" and self.device_type != "mobile":
-                        USI._log_error(self, err={
-                                "value": f"{self.device_type} is an invalid device type. Set device type: desktop or mobile"
-                                })
+                        USI._terminate_script(self, name=f"{self.device_type}: ", message="Invalid device type. Set device type: desktop or mobile")
                 global chrome_options
                 chrome_options = ChromeOptions()
                 firefox_options = FirefoxOptions()
@@ -55,7 +53,7 @@ class USI:
                         mobile_emulation = { "deviceName": "iPhone 6/7/8" } # Iphone X for now
                         chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
                 elif self.device_type == "mobile" and self.driver == "firefox" or self.device_type == "mobile" and self.driver == "safari":
-                        USI._log_error(self, err={"value": "Only chrome can run mobile execution"})
+                        USI._terminate_script(self, name=f"{self.driver}-{self.device_type}: ", message="Only chrome can run mobile execution")
 
                 # Broswer driver
                 if self.driver == "chrome":
@@ -100,25 +98,14 @@ class USI:
         def _precheck_data(self, elements, data_type, locate_by="css"):
                 allowed_locator = {"xpath", "css"}
                 if locate_by not in allowed_locator:
-                        USI._log_error(self, err={"value": f"{locate_by} is not a valid locator. Valid locators are {allowed_locator}"})
+                        USI._terminate_script(self, name="Invalid Selector", message=f"{locate_by} is not a valid locator. Valid locators are {allowed_locator}")
                 elif data_type[1] != type(elements):
-                        USI._log_error(self, err={"type": f"{data_type[0]} accpets a {data_type[1]}"})
+                        USI._terminate_script(self, name="Wrong data type", message=f"{data_type[0]} accpets a {data_type[1]}")
                 else:
                         pass
 
 
 
-        # Send error to console (will update to write to file)
-        def _log_error(self, err):
-                for err_type, message in err.items():
-                        if err_type == "value":
-                                raise ValueError(message)
-                        elif err_type == "type":
-                                raise TypeError(message)
-                        elif err_type == "name":
-                                raise NameError(message)
-                        elif err_type == "exeception":
-                                print(message)
 
 
         # logger handles all prints statementsto the terminal. 
@@ -182,7 +169,7 @@ class USI:
         # button click: accepts a dict of button/link names & selector
                 # {'Add to cart button':'#cart'}
         def click(self, element_data, locate_by="css", node_index=-1):
-                        data_type = ["click", dict]
+                        data_type = ["click(): element_data", dict]
                         USI._precheck_data(self, element_data, data_type, locate_by)
                         
                         if locate_by == "css":
@@ -231,7 +218,7 @@ class USI:
         # Input text: accepts an dict of name and selector/input 
                 #{"name": ["#formFirstname", "johnny"]}
         def input_text(self, input_data, locate_by="css"):
-                data_type = ["input_text", dict]
+                data_type = ["input_text(): input_date", dict]
                 USI._precheck_data(self, input_data, data_type, locate_by)
 
                 if locate_by == "css":
@@ -255,10 +242,12 @@ class USI:
         # Inputs email address for LC modal (USI)
                 # takes email address string and optional seconds arg
         def lc_input(self, email, selector="#usi_content #usi_email_container #usi_email", sec=60):
-                data_type = ["lc_input", str]
+                data_type = ["lc_input(): email", str]
+                data_type2 = ["lc_input(): sec", int]
                 validate_items = [selector, email]
-                for item in validate_items:
-                        USI._precheck_data(self, item, data_type)
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+                USI._precheck_data(self, sec, data_type2)
+                        
 
                 try:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
@@ -270,7 +259,7 @@ class USI:
         # Hover & button click: accepts a dict of a visible element selector and non-visible selector 
                 # {"checkout button": ['#menuBar', '#dropDown a'}
         def hover_and_click(self, elements, locate_by="css"):
-                data_type = ["hover_and_click", dict]
+                data_type = ["hover_and_click(): elements", dict]
                 USI._precheck_data(self, elements, data_type, locate_by)
 
                 if locate_by == "css":
@@ -309,8 +298,11 @@ class USI:
 
         # Submit Button Click: Accepts css selector or default value will be used (USI)
         def click_cta(self, selector="#usi_content .usi_submitbutton", clicks=1):
-                data_type = ["click_cta", str]
+                data_type = ["click_cta(): selector", str]
+                data_type2 = ["click_cta(): clicks", int]
                 USI._precheck_data(self, selector, data_type)
+                USI._precheck_data(self, clicks, data_type2)
+                
                 for _ in range(clicks):
                         try:
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
@@ -328,7 +320,7 @@ class USI:
                 # Accpets a dict of name and list of css selector & value or text
                 #select_option({"Plug type select":["#pa_plug-type","us-plug"]}, select_by="value")
         def select_option(self, select_data, select_by="value"):
-                data_type = ["checkbox", dict]
+                data_type = ["checkbox(): select_data", dict]
                 USI._precheck_data(self, select_data, data_type)
 
                 for name, value in select_data.items():
@@ -344,7 +336,7 @@ class USI:
 
         # Launches Modal: No args accepted (USI)
         def launch_modal(self, proactive=False, sec=5):
-                data_type = ["launch_modal", int]
+                data_type = ["launch_modal(): sec", int]
                 USI._precheck_data(self, sec, data_type)
                 if proactive == False:
                         USI.halt_execution(self, sec=5)
@@ -366,7 +358,7 @@ class USI:
 
         # Executes any javascript code
         def execute_js(self, script, name="JS code"):
-                data_type = ["execute_js", str]
+                data_type = ["execute_js() script", str]
                 USI._precheck_data(self, script, data_type)
 
                 USI.halt_execution(self, sec=5)
@@ -379,7 +371,7 @@ class USI:
 
         # Appends string url parameters
         def append_url(self, param):
-                data_type = ["append_url", str]
+                data_type = ["append_url(): param", str]
                 USI._precheck_data(self, param, data_type)
 
                 page_url = ""
@@ -393,7 +385,7 @@ class USI:
         # checks if boostbar exists
                 # accepts one param if named different them the default
         def boostbar_check(self, boostbar="#usi_boost_container"):
-                data_type = ["boostbar_check", str]
+                data_type = ["boostbar_check(): boostbar", str]
                 USI._precheck_data(self, boostbar, data_type)
 
                 try:
@@ -406,10 +398,9 @@ class USI:
         #  Checks if a tab (TT or LC) can toggle
                 # Default params should suffice, change if needed  
         def tab_click(self, decision_selector=".usi_tab_opened", tab="#usi_tab"):
-                data_type = ["tab_click", str]
+                data_type = ["tab_click()", str]
                 validate_items = [decision_selector, tab]
-                for item in validate_items:
-                        USI._precheck_data(self, item, data_type)
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
 
                 try:
                         USI.click(self, element_data={"USI tab":tab})
@@ -427,7 +418,7 @@ class USI:
         # Retrieves session cookie
                 #accepts a str of the cookie you want ot retrieve
         def get_cookie(self, cookie):
-                data_type = ["get_cookie", str]
+                data_type = ["get_cookie()", str]
                 USI._precheck_data(self, cookie, data_type)
 
                 USI.halt_execution(self, sec=3)
@@ -448,8 +439,8 @@ class USI:
                 '''
                         # coupon_validation(self, validate_by="")
         def coupon_validation(self, validate_by, target_element, message_text="", locate_by="css"):
-                data_type = ["coupon_validation", str]
-                validate_items = [validate_by, target_element, message_text]
+                data_type = ["coupon_validation()", str]
+                validate_items = [validate_by, target_element, message_text, locate_by]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
 
 
@@ -499,8 +490,8 @@ class USI:
         )
         '''
         def discount_check(self, promo_data, discount_data, locate_by="css"):
-                data_type1 = ["promo_data", list]
-                data_type2 = ["discount_check", dict]
+                data_type1 = ["promo_data(): promo_data", list]
+                data_type2 = ["discount_check(): discount_data", dict]
                 USI._precheck_data(self, promo_data, data_type1)
                 USI._precheck_data(self, discount_data, data_type2)
                 
@@ -568,7 +559,7 @@ class USI:
         # Closes usi modal (USI)
                 # Accepts one string param if different from default
         def close_usi_modal(self, selector="#usi_default_close", locate_by="css"):
-                data_type = ["checkbox", str]
+                data_type = ["checkbox()", str]
                 USI._precheck_data(self, selector, data_type, locate_by)
 
                 if locate_by == "css":
@@ -590,6 +581,10 @@ class USI:
             Ex. wait_for_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
         '''
         def check_element_visibility(self, element_name, selector, text="", locate_by="css"):
+                data_type = ["check_element_visibility()", str]
+                validate_items = [element_name, selector, text, locate_by]
+                [USI._precheck_data(self, item, data_type) for item in validate_items]
+
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
@@ -624,7 +619,7 @@ class USI:
                         #       session="usi_sess_27176_739_1567110133125", 
                         #       element_xpath="")
         def email_link_follow(self, campaign_type, element_xpath, override_session_name="", new_window=True):
-                data_type = ["usi_email_link", str]
+                data_type = ["usi_email_link()", str]
                 validate_items = [campaign_type, element_xpath]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
         
@@ -665,7 +660,7 @@ class USI:
                 '''
 
         def check_product_rec(self, usi_product_selectors, site_product_selectors, new_window=True, cta_selector="#usi_content .usi_submitbutton"):
-                data_type = ["check_product_rec", list]
+                data_type = ["check_product_rec()", list]
                 validate_items = [usi_product_selectors, site_product_selectors]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
 
@@ -710,6 +705,8 @@ class USI:
         )
         '''
         def switch_tab(self, tab=1):
+                data_type = ["switch_tab()", int]
+                USI._precheck_data(self, tab, data_type)
                 self.browser.switch_to.window(self.browser.window_handles[tab])
 
 
@@ -742,7 +739,7 @@ class USI:
         # checkbox_data is used to click a checkbox 
 
         def checkbox(self, checkbox_data="", locate_by="css"):
-                data_type = ["checkbox", dict]
+                data_type = ["checkbox()", dict]
                 USI._precheck_data(self, checkbox_data, data_type, locate_by)
 
                 if locate_by == "css":
@@ -764,7 +761,7 @@ class USI:
         # checks if a campaign is under the correct sale window for launch
         # Accepts an two string arguments of a state date and an end date
         def set_date_window(self, start_date, end_date):
-                data_type = ["set_date_window", str]
+                data_type = ["set_date_window()", str]
                 validate_items = [start_date, end_date]  
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
 
@@ -782,7 +779,8 @@ class USI:
                 ending_date = datetime.datetime(end_list[0],end_list[1], end_list[2])
 
                 if ending_date < starting_date:
-                        USI._log_error(self, err={"value":  f"End date => {end_date} cannot be eariler then specified start date {start_date}"})
+                        USI._terminate_script(self, name="Date Error", message=f"End date => {end_date} cannot be eariler then specified start date {start_date}", fail_pass=True)
+                        
 
                 if starting_date <= today <= ending_date:
                         pass
@@ -811,4 +809,5 @@ class USI:
                 USI._logger(self, message=colored("---------------------------Test Complete-----------------------------", color="green") +
                 "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
                 colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
+
 
