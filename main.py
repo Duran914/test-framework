@@ -370,16 +370,27 @@ class USI:
 
 
         # Appends string url parameters
-        def append_url(self, param):
+        def append_url(self, param, wait_param_exist=False, url=""):
+                #  Check url data type
                 data_type = ["append_url(): param", str]
                 USI._precheck_data(self, param, data_type)
 
                 page_url = ""
-                if '?' in self.browser.current_url:
-                        page_url = self.browser.current_url + "&" + param
-                else:
-                        page_url = self.browser.current_url + "?" + param
-                USI.navigate_url(self, page_url)
+                if wait_param_exist == True:
+                        try:
+                                if WebDriverWait(self.browser, 20).until(EC.url_contains(url)):                
+                                        url_found = True
+                                        USI._logger(self, message=f"URL Parameter => {url}" + colored(" Exists", "green"))
+                        except Exception:
+                                url_found = False
+                                USI._terminate_script(self, name="URL Param", element=url, message="URL Parameter Not Found")
+                
+                if wait_param_exist == False or wait_param_exist == True and url_found == True:
+                        if '?' in self.browser.current_url:
+                                page_url = self.browser.current_url + "&" + param
+                        else:
+                                page_url = self.browser.current_url + "?" + param
+                        USI.navigate_url(self, page_url)
 
 
         # checks if boostbar exists
@@ -682,9 +693,9 @@ class USI:
                         onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[0]))).get_attribute("innerText")
                         
                         if product_rec_name == onsite_product_name:
-                                USI._logger(self, message=f"Product Rec name => onsite product name {onsite_product_name} " + colored(" Correct", "green"))
+                                USI._logger(self, message=f"Product Rec name => Onsite product name: \"{onsite_product_name}\" " + colored(" Correct", "green"))
                         else:
-                                USI._terminate_script(self, name="Product Rec USI product name => ", message=F"Not matching onsite product name")
+                                USI._terminate_script(self, name="Product Rec USI product name => ", message="Not matching onsite product name")
                 else:
                         onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[0]))).get_attribute("innerText")
                         onsite_product_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[1]))).get_attribute("innerText")
