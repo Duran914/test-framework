@@ -254,13 +254,17 @@ select_option(select_data={"Size select":[".select-size", "large"]}, select_by="
 #
 
 ### append_url()
-The append_url function appeands a parameter to the current url and navigates to the new url. Query components "?" and "&" do not need to be passed in argument.
+The append_url function appeands a parameter to the current url and navigates to the new url.
 
 #### *Example:*<br>
 ```Python
-append_url("usi_enable=1")
+append_url(param="usi_enable=1", wait_param_exist=False, url=")
 ```
-* Accepts a single string argument.
+* Accepts three arguments.
+  * param takes a string argument, query components "?" and "&" do not need to be passed in argument.
+  * wait_param_exist accepts a boolean argument, True will set a WebdDriverWait to poll until a parameter exists in the URL.
+  * url accepts a string argument of string of text that should be present in the url. If the string of text exists, the param string 
+  will be inserted into the current url. 
 
 #
 
