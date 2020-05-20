@@ -182,8 +182,10 @@ class USI:
                                                 else:
                                                         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
                                                         USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
-                                        except Exception:
-                                                USI._terminate_script(self, name=name, element=button)
+                                        except Exception as msg:
+                                                        if(msg == ""):
+                                                                msg="Element could not be located"
+                                                        USI._terminate_script(self, name=name, element=button, message=msg)
 
                         elif locate_by == "xpath":
                                 for name, button in element_data.items():
@@ -339,12 +341,22 @@ class USI:
                 data_type = ["launch_modal(): sec", int]
                 USI._precheck_data(self, sec, data_type)
                 if proactive == False:
-                        USI.halt_execution(self, sec=5)
                         try:
-                                self.browser.execute_script("usi_js.display();")
-                                USI._logger(self, message="USI modal => " + colored("Launched", color="green"))
-                        except JavascriptException:
-                                USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                                tries = 3 # loop for .usi_display 3 times at 3 second intervals
+                                while self.browser.find_element_by_css_selector(".usi_display"):
+                                        try:
+                                                self.browser.execute_script("usi_js.display();")
+                                                USI._logger(self, message="USI modal => " + colored("Launched", color="green"))
+                                                break
+                                        except Exception:
+                                                pass
+                                        sleep(3)
+                                        tries -= 1
+                                        print(f"Searching for modal..{tries} attempts left")
+                                        if tries == 0:
+                                                USI._terminate_script(self, name="USI Modal", message="Launch conditions not met; usi_js.display() is undefined", element=".usi_display")
+                        except Exception:
+                                USI._terminate_script(self, name="USI Modal", message="No View.jsp loaded on this page", element=".usi_display")
                 elif proactive == True:
                         if sec == "":
                                 USI._terminate_script(self, name="Proactive Launch", message="Proactive launches must pass a proactive_wait INT argument", element="Bad Data" )
