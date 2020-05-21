@@ -11,7 +11,6 @@ from selenium.common.exceptions import JavascriptException
 from selenium.common.exceptions import SessionNotCreatedException
 from time import sleep, time
 import config  # Create & populate config.py 
-from termcolor import colored
 import sys
 from datetime import date
 import re
@@ -82,7 +81,7 @@ class USI:
 
                 elif self.driver == "safari":
                         if self.headless == True:
-                                USI._logger(self, message=colored("Safari does not support headless mode", color="red"))
+                                USI._logger(self, message=USI._pr_color(self, "Safari does not support headless mode", color="red"))
                                 sys.exit()
                         self.browser = webdriver.Safari(executable_path=config.safari_driver) 
 
@@ -90,7 +89,7 @@ class USI:
                 self.browser.implicitly_wait(15)
 
                 # Log script info & results
-                results = colored(f"{self.company} {self.campaign_type} {self.site_id}", color="cyan") + f" - {self.driver.capitalize()}|{self.device_type.capitalize()} => " + colored("Running...", color="green")
+                results = USI._pr_color(self, f"{self.company} {self.campaign_type} {self.site_id}", color="cyan") + f" - {self.driver.capitalize()}|{self.device_type.capitalize()} => " + USI._pr_color(self, "Running...", color="green")
                 USI._logger(self, message=results)
                 
         
@@ -104,7 +103,19 @@ class USI:
                 else:
                         pass
 
-
+        def _pr_color(self, text, color):
+                if color == "green":
+                        return f"\033[32m{text}\033[00m"
+                elif color == "red":
+                        return f"\033[31m{text}\033[00m"
+                elif color == "cyan":
+                        return f"\033[96m{text}\033[00m"
+                elif color == "yellow":
+                        return f"\033[93m{text}\033[00m"
+                elif color == "blue":
+                        return f"\033[34m{text}\033[00m"
+                else:
+                        return f"\033[97m{text}\033[00m"
 
 
 
@@ -131,14 +142,14 @@ class USI:
         # terminates a test
         def _terminate_script(self, name, message="Element could not be located", element="", fail_pass=False):
                 if fail_pass == True:
-                        USI._logger(self, message=colored("--------------------------Test Aborted----------------------------------", color="yellow") +
-                        "\n" + f"{name}: {element} => " +  colored(message, color="yellow"))
+                        USI._logger(self, message=USI._pr_color(self, "--------------------------Test Aborted----------------------------------", color="yellow") +
+                        "\n" + f"{name}: {element} => " +  USI._pr_color(self, message, color="yellow"))
                 elif element == "":
-                        USI._logger(self, message=colored("--------------------------Test Failed----------------------------------", color="red") +
-                        "\n" + f"{name} => " +  colored(message, color="red"), log_to_file=True)
+                        USI._logger(self, message=USI._pr_color(self, "--------------------------Test Failed----------------------------------", color="red") +
+                        "\n" + f"{name} => " +  USI._pr_color(self, message, color="red"), log_to_file=True)
                 else:
-                        USI._logger(self, message=colored("--------------------------Test Failed----------------------------------", color="red") +
-                        "\n" + f"{name}: {element} => " +  colored(message, color="red"), log_to_file=True)
+                        USI._logger(self, message=USI._pr_color(self, "--------------------------Test Failed----------------------------------", color="red") +
+                        "\n" + f"{name}: {element} => " +  USI._pr_color(self, message, color="red"), log_to_file=True)
                 USI._logger(self, message="\n")
                 self.browser.quit()
                 sys.exit()
@@ -163,7 +174,7 @@ class USI:
                         USI._terminate_script(self, name="initiate_test()", message="USI class instantiation falied")
 
                 self.browser.get(url)
-                USI._logger(self, message="Navigating to => " + colored(url, color="blue"))
+                USI._logger(self, message="Navigating to => " + USI._pr_color(self, url, color="blue"))
 
 
         # button click: accepts a dict of button/link names & selector
@@ -178,10 +189,10 @@ class USI:
                                                 if node_index >= 0:
                                                         sleep(5) # give webdriver time to parse nodelist
                                                         self.browser.find_elements_by_css_selector(button)[node_index].click()
-                                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                                        USI._logger(self, message=f"{name} => " + USI._pr_color(self, "Clicked", color="green"))
                                                 else:
                                                         WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
-                                                        USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                                        USI._logger(self, message=f"{name} => " + USI._pr_color(self, "Clicked", color="green"))
                                         except Exception as msg:
                                                         if(msg == ""):
                                                                 msg="Element could not be located"
@@ -191,7 +202,7 @@ class USI:
                                 for name, button in element_data.items():
                                         try: 
                                                 self.browser.find_element_by_xpath(button).click()
-                                                USI._logger(self, message=f"{name} => " + colored("Clicked", color="green"))
+                                                USI._logger(self, message=f"{name} => " + USI._pr_color(self, "Clicked", color="green"))
                                         except Exception:
                                                 USI._terminate_script(self, name=name, element=button)
                 
@@ -227,7 +238,7 @@ class USI:
                         for name, value in input_data.items():
                                 try:
                                         WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, value[0]))).send_keys(value[1])
-                                        USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
+                                        USI._logger(self, message=f"{value[1]} => " + USI._pr_color(self, f"entered into {name}", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=value[0])
                 elif locate_by == "xpath":
@@ -235,7 +246,7 @@ class USI:
                                 try:
                                         # self.browser.find_element_by_xpath(value[0]).send_keys(value[1])
                                         WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.XPATH, value[0]))).send_keys(value[1])
-                                        USI._logger(self, message=f"{value[1]} => " + colored(f"entered into {name}", color="green"))
+                                        USI._logger(self, message=f"{value[1]} => " + USI._pr_color(self, f"entered into {name}", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=value[0])
 
@@ -253,7 +264,7 @@ class USI:
 
                 try:
                         WebDriverWait(self.browser, sec).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))).send_keys(email)
-                        USI._logger(self, message=f"LC modal: {email} => " + colored("Entered into LC", color="green"))
+                        USI._logger(self, message=f"LC modal: {email} => " + USI._pr_color(self, "Entered into LC", color="green"))
                 except Exception:
                         USI._terminate_script(self, name="LC input field", element=selector)
 
@@ -277,8 +288,8 @@ class USI:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
-                                USI._logger(self, message="Visible element => " + colored("Hovered", color="green") +
-                                "\n" + f"{name} => " + colored("clicked", color="green"))
+                                USI._logger(self, message="Visible element => " + USI._pr_color(self, "Hovered", color="green") +
+                                "\n" + f"{name} => " + USI._pr_color(self, "clicked", color="green"))
 
 
                 elif locate_by == "xpath":
@@ -294,8 +305,8 @@ class USI:
                                         USI._terminate_script(self,  name="hidden element",  element=elements[1])
 
                                 ActionChains(self.browser).move_to_element(visible_element).click(hidden_element).perform()
-                                USI._logger(self, message="Visible element => " + colored("Hovered", color="green") +
-                                "\n" + f"{name} => " + colored("clicked", color="green"))
+                                USI._logger(self, message="Visible element => " + USI._pr_color(self, "Hovered", color="green") +
+                                "\n" + f"{name} => " + USI._pr_color(self, "clicked", color="green"))
 
 
         # Submit Button Click: Accepts css selector or default value will be used (USI)
@@ -308,9 +319,9 @@ class USI:
                 for _ in range(clicks):
                         try:
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
-                                USI._logger(self, message="CTA => " + colored("Clicked", color="green"))
+                                USI._logger(self, message="CTA => " + USI._pr_color(self, "Clicked", color="green"))
                         except Exception:
-                                USI._logger(self, message="CTA => " + colored("Not found", color="red"))
+                                USI._logger(self, message="CTA => " + USI._pr_color(self, "Not found", color="red"))
                                 USI._terminate_script(self, name="CTA", element=selector)
 
 
@@ -329,11 +340,11 @@ class USI:
                         if select_by == "value":
                                 select = Select(self.browser.find_element_by_css_selector(value[0]))
                                 select.select_by_value(value[1])
-                                USI._logger(self, message=f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
+                                USI._logger(self, message=f"Value: {value[1]} => " + USI._pr_color(self, f"Selected from {name}", color="green"))
                         elif select_by == "text":
                                 select= Select(self.browser.find_element_by_css_selector(value[0]))
                                 select.select_by_visible_text(value[1])
-                                USI._logger(self, message=f"Value: {value[1]} => " + colored(f"Selected from {name}", color="green"))
+                                USI._logger(self, message=f"Value: {value[1]} => " + USI._pr_color(self, f"Selected from {name}", color="green"))
 
 
         # Launches Modal: No args accepted (USI)
@@ -346,7 +357,7 @@ class USI:
                                 while self.browser.find_element_by_css_selector(".usi_display"):
                                         try:
                                                 self.browser.execute_script("usi_js.display();")
-                                                USI._logger(self, message="USI modal => " + colored("Launched", color="green"))
+                                                USI._logger(self, message="USI modal => " + USI._pr_color(self, "Launched", color="green"))
                                                 break
                                         except Exception:
                                                 pass
@@ -364,7 +375,7 @@ class USI:
                                 USI.halt_execution(self, sec)
                                 try:
                                         self.browser.find_element_by_css_selector(".usi_display.usi_show_css")
-                                        USI._logger(self, message="USI Modal => " + colored("Launched", color="green"))
+                                        USI._logger(self, message="USI Modal => " + USI._pr_color(self, "Launched", color="green"))
                                 except JavascriptException:
                                         USI._terminate_script(self, name="USI Modal", message="Proactive Launch conditions not met", element=".usi_display")
 
@@ -376,7 +387,7 @@ class USI:
                 USI.halt_execution(self, sec=5)
                 try:
                         self.browser.execute_script(script)
-                        USI._logger(self, message=f"{name} => " + colored("Executed", color="green"))
+                        USI._logger(self, message=f"{name} => " + USI._pr_color(self, "Executed", color="green"))
                 except JavascriptException:
                         USI._terminate_script(self, name=name, message="Execution failed", element=script)
 
@@ -392,7 +403,7 @@ class USI:
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.url_contains(url)):                
                                         url_found = True
-                                        USI._logger(self, message=f"URL Parameter => {url}" + colored(" Exists", "green"))
+                                        USI._logger(self, message=f"URL Parameter => {url}" + USI._pr_color(self, " Exists", "green"))
                         except Exception:
                                 url_found = False
                                 USI._terminate_script(self, name="URL Param", element=url, message="URL Parameter Not Found")
@@ -413,7 +424,7 @@ class USI:
 
                 try:
                         if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
-                                USI._logger(self, message="Boostbar => " + colored("Exists", "green"))
+                                USI._logger(self, message="Boostbar => " + USI._pr_color(self, "Exists", "green"))
                 except Exception:
                         USI._terminate_script(self, name="Boostbar", element=boostbar)
 
@@ -432,7 +443,7 @@ class USI:
                 
                 try:
                         if self.browser.find_element_by_css_selector(decision_selector):
-                                USI._logger(self, message="Tab => " + colored("Opened", "green"))
+                                USI._logger(self, message="Tab => " + USI._pr_color(self, "Opened", "green"))
                 except Exception:
                         USI._terminate_script(self, name="tab_opened class", element=".usi_tab_opened")
                         
@@ -450,7 +461,7 @@ class USI:
                 else:
                         cookie_name = self.browser.get_cookie(cookie)
                         cookie_value = cookie_name["value"]
-                        USI._logger(self, message=f"{cookie}: " + colored(cookie_value, "blue"))
+                        USI._logger(self, message=f"{cookie}: " + USI._pr_color(self, cookie_value, "blue"))
         
 
         #   Check for coupon validation
@@ -470,21 +481,21 @@ class USI:
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, target_element))):
-                                        USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
+                                        USI._logger(self, message="Coupon code element => " + USI._pr_color(self, "Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
                        
                         if validate_by == "message" or validate_by == "element_message":                                
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, target_element), message_text)):
-                                                USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                                USI._logger(self, message="Coupon code validation message => " + USI._pr_color(self, "Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
 
                 if locate_by == "xpath":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, target_element))):
-                                        USI._logger(self, message="Coupon code element => " + colored("Valid", color="green"))
+                                        USI._logger(self, message="Coupon code element => " + USI._pr_color(self, "Valid", color="green"))
                         except Exception:
                                 USI._terminate_script(self, name="Coupon Element", element=target_element, message="In-valid validation element")
                        
@@ -492,7 +503,7 @@ class USI:
                                 
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.XPATH, target_element), message_text)):
-                                                USI._logger(self, message="Coupon code validation message => " + colored("Valid: " + message_text, color="green"))
+                                                USI._logger(self, message="Coupon code validation message => " + USI._pr_color(self, "Valid: " + message_text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name="Coupon Message", element=message_text, message="In-valid validation message")
                 
@@ -524,7 +535,7 @@ class USI:
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"):
                                                 USI._logger(
-                                                        self, message=f"{amount_name} => " + colored
+                                                        self, message=f"{amount_name} => " + USI._pr_color(self, "Correct", color="green")
                                                         (WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, element))).get_attribute("innerText"), 
                                                         color="green")
                                                         )
@@ -542,7 +553,7 @@ class USI:
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"):
                                                 USI._logger(
-                                                        self, message=f"{amount_name} => " + colored
+                                                        self, message=f"{amount_name} => " + USI._pr_color(self, "Correct", color="green")
                                                         (WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, element))).get_attribute("innerText"), 
                                                         color="green")
                                                         )
@@ -573,7 +584,7 @@ class USI:
                 high_threshold = int(desired_value) + 2
 
                 if int(desired_value) == int(totals[2]) or totals[2] in range(low_threshold, high_threshold):
-                        USI._logger(self, message=f"Discount amount: {format(promo_data[1], '.2f')} off => " + colored("Correct", "green"))
+                        USI._logger(self, message=f"Discount amount: {format(promo_data[1], '.2f')} off => " + USI._pr_color(self, "Correct", "green"))
                 else:
                         USI._terminate_script(self, name="Discount: ", message=f"Correct Amount should be {totals[2]}", element=desired_value)
 
@@ -588,13 +599,13 @@ class USI:
                 if locate_by == "css":
                         try:
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector))).click()
-                                USI._logger(self, message="Modal => " + colored("Closed", "green"))
+                                USI._logger(self, message="Modal => " + USI._pr_color(self, "Closed", "green"))
                         except Exception:
                                 USI._terminate_script(self, name="Close button", element=selector)
                 if locate_by == "xpath":
                         try:
                                 WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.XPATH, selector))).click()
-                                USI._logger(self, message="Modal => " + colored("Closed", "green"))
+                                USI._logger(self, message="Modal => " + USI._pr_color(self, "Closed", "green"))
                         except Exception:
                                 USI._terminate_script(self, name="Close button", element=selector)
 
@@ -611,27 +622,27 @@ class USI:
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
-                                        USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
+                                        USI._logger(self, message=f"{element_name}: {selector} => " + USI._pr_color(self, "Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)):
-                                                USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
+                                                USI._logger(self, message=f"{element_name}: text => " + USI._pr_color(self, "Valid: " + text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
                 elif locate_by == "xpath":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.XPATH, selector))):
-                                        USI._logger(self, message=f"{element_name}: {selector} => " + colored("Element Located", "green"))
+                                        USI._logger(self, message=f"{element_name}: {selector} => " + USI._pr_color(self, "Element Located", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
                                         if WebDriverWait(self.browser, 20).until(EC.text_to_be_present_in_element((By.XPATH, selector), text)):
-                                                USI._logger(self, message=f"{element_name}: text => " + colored("Valid: " + text, color="green"))
+                                                USI._logger(self, message=f"{element_name}: text => " + USI._pr_color(self, "Valid: " + text, color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
 
@@ -705,7 +716,7 @@ class USI:
                         onsite_product_name = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[0]))).get_attribute("innerText")
                         
                         if product_rec_name == onsite_product_name:
-                                USI._logger(self, message=f"Product Rec name => Onsite product name: \"{onsite_product_name}\" " + colored(" Correct", "green"))
+                                USI._logger(self, message=f"Product Rec name => Onsite product name: \"{onsite_product_name}\" " + USI._pr_color(self, " Correct", "green"))
                         else:
                                 USI._terminate_script(self, name="Product Rec USI product name => ", message="Not matching onsite product name")
                 else:
@@ -713,7 +724,7 @@ class USI:
                         onsite_product_price = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, site_product_selectors[1]))).get_attribute("innerText")
 
                         if product_rec_name == onsite_product_name and product_rec_price == onsite_product_price:
-                                USI._logger(self, message=f"Product Rec name & price => " + colored("Correct", "green"))
+                                USI._logger(self, message=f"Product Rec name & price => " + USI._pr_color(self, "Correct", "green"))
                         elif product_rec_name == onsite_product_name and product_rec_price != onsite_product_price:
                                 USI._terminate_script(self, name="Product Rec price => ", message="Not matching onsite product price")
                         elif product_rec_name != onsite_product_name and product_rec_price == onsite_product_price:
@@ -744,7 +755,7 @@ class USI:
                 if USI._retrive_cookie(self, cookie=dice_roll) == "0" or USI._retrive_cookie(self, cookie=dice_roll) == None:
                         USI._terminate_script(self, name="Split test", element=dice_roll, message="Control group", fail_pass=True)
                 else:   
-                        USI._logger(self, message="Split Group: " + colored("USI" , color="green"))
+                        USI._logger(self, message="Split Group: " + USI._pr_color(self, "USI" , color="green"))
                         pass
 
 
@@ -756,7 +767,7 @@ class USI:
         # Simply refeshes a page
         def refresh_page(self):
                 self.browser.refresh()
-                USI._logger(self, message=colored("Page refreshed", color="blue"))
+                USI._logger(self, message=USI._pr_color(self, "Page refreshed", color="blue"))
 
 
         # checkbox_data is used to click a checkbox 
@@ -769,14 +780,14 @@ class USI:
                         for name, selector in checkbox_data.items():
                                 try:
                                         self.browser.find_element_by_css_selector(selector).click()
-                                        USI._logger(self, message=f"{name} => {selector} " + colored("Checked", "green"))
+                                        USI._logger(self, message=f"{name} => {selector} " + USI._pr_color(self, "Checked", "green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
                 elif locate_by == "xpath":
                         for name, selector in checkbox_data.items():
                                 try:
                                         self.browser.find_element_by_xpath(selector).click()
-                                        USI._logger(self, message=f"{name} => {selector} " + colored("Checked", "green"))
+                                        USI._logger(self, message=f"{name} => {selector} " + USI._pr_color(self, "Checked", "green"))
                                 except Exception:
                                         USI._terminate_script(self, name=name, element=selector, message="Checkbox could not be checked")
         
@@ -826,11 +837,12 @@ class USI:
         # Shuts down driver 
         def shutdown(self):
                 complete_time = round((time() - start_time), 1)
-                USI._logger(self, message=colored("Shutting down driver", color="yellow"))
+                USI._logger(self, message=USI._pr_color(self, "Shutting down driver", color="yellow"))
                 sleep(3) # Static wait solely for UX
                 self.browser.quit()
-                USI._logger(self, message=colored("---------------------------Test Complete-----------------------------", color="green") +
-                "\n" + colored(self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
-                colored(f"All Tests Passed ({complete_time}s)", color="green") + "\n")
+                USI._logger(self, message=USI._pr_color(self, "---------------------------Test Complete-----------------------------", color="green") +
+                "\n" + USI._pr_color(self, self.campaign_type + " " + self.site_id, color="cyan") + " => " + 
+                USI._pr_color(self, f"All Tests Passed ({complete_time}s)", color="green") + "\n")
+
 
 
