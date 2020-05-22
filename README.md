@@ -7,8 +7,6 @@
   * https://www.python.org/downloads/
 * Selenium WebDriver 
   * https://www.seleniumhq.org/download/ or use pip install selenium
-* Termcolor
-  * pip install termcolor
 * Download browser drivers
     * https://www.seleniumhq.org/download/ (Framework currently supports Chrome, Firefox, and Safari)
     * Safari driver can be found at /usr/bin/safaridriver
