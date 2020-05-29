@@ -191,7 +191,7 @@ class USI:
                                                         self.browser.find_elements_by_css_selector(button)[node_index].click()
                                                         USI._logger(self, message=f"{name} ".ljust(40, '.') + USI._pr_color(self, " Clicked ✓", color="green"))
                                                 else:
-                                                        WebDriverWait(self.browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
+                                                        WebDriverWait(self.browser, 40).until(EC.element_to_be_clickable((By.CSS_SELECTOR, button))).click()
                                                         USI._logger(self, message=f"{name} ".ljust(40, '.') + USI._pr_color(self, " Clicked ✓", color="green"))
                                         except Exception as msg:
                                                         messg = str(msg)
@@ -649,6 +649,23 @@ class USI:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
 
 
+        # Checks if the desired monitor.js has loaded in the network.
+        def precapture_load(self):
+                tries = 3 # will try to refresh page 3 times to load email in broswer 
+                while tries != 0:
+                        try:
+                                self.browser.execute_script('usi_js_monitor["USI_siteID"]')
+                                site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
+                                USI._logger(self, message=f"Monitor: {site_id}".ljust(40, '.') + USI._pr_color(self, " Ready", "green"))
+                                break
+                        except Exception:
+                                sleep(3)
+                                tries -= 1
+                                USI._logger(self, message=f"Searching for PC Monitor ".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
+                        if tries == 0:
+                                USI._terminate_script(self, name="USI Modal", message="Monitor.js load failed", element=".usi_display")
+
+        
         # Open an email in a broswer window which can be use to check email links are working 
                 #Accepts two strings of session name and element xpath for the email element (xpath MUST be used here).
                         #  usi_email_link(self, 
