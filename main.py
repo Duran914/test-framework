@@ -670,10 +670,10 @@ class USI:
                 #Accepts two strings of session name and element xpath for the email element (xpath MUST be used here).
                         #  usi_email_link(self, 
                         #       session="usi_sess_27176_739_1567110133125", 
-                        #       element_xpath="")
-        def email_link_follow(self, campaign_type, element_xpath, override_session_name="", new_window=True):
+                        #       hero_selector="")
+        def email_link_follow(self, campaign_type, hero_selector, override_session_name="", new_window=True):
                 data_type = ["usi_email_link()", str]
-                validate_items = [campaign_type, element_xpath]
+                validate_items = [campaign_type, hero_selector]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
         
 
@@ -696,9 +696,9 @@ class USI:
                                 USI._terminate_script(self, name="Email url", element=campaign_type, message="Session not found")
 
                 try:
-                        USI.click(self, element_data={"Email hero link":element_xpath}, locate_by="xpath")
+                        USI.click(self, element_data={"Email hero link":hero_selector}, locate_by="css")
                 except Exception:
-                        USI._terminate_script(self, name="Hero Image", element=element_xpath, message="Email link not found")
+                        USI._terminate_script(self, name="Hero Image", element=hero_selector, message="Email link not found")
 
                 # In the event of an email link missing a target="_blank" attribute; set new_window argument to false
                 if new_window == True:
