@@ -426,13 +426,15 @@ class USI:
 
         # checks if boostbar exists
                 # accepts one param if named different them the default
-        def boostbar_check(self, boostbar="#usi_boost_container"):
+        def boostbar_check(self, boostbar="#usi_boost_container", bb_close_selector=""):
                 data_type = ["boostbar_check(): boostbar", str]
                 USI._precheck_data(self, boostbar, data_type)
 
                 try:
                         if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
                                 USI._logger(self, message="Boostbar ".ljust(40, '.') + USI._pr_color(self, " Exists", "green"))
+                                if bb_close_selector != "":
+                                        USI.click(self, element_data={"Close boost bar":bb_close_selector})
                 except Exception:
                         USI._terminate_script(self, name="Boostbar", element=boostbar)
 
@@ -620,7 +622,7 @@ class USI:
 
         ''' Checks to see if a desired element is present on the DOM and visible on page. 
             Can be used as a condition for another action. 
-            Ex. wait_for_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
+            Ex. check_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
         '''
         def check_element_visibility(self, element_name, selector, text="", locate_by="css"):
                 data_type = ["check_element_visibility()", str]
@@ -630,7 +632,7 @@ class USI:
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
-                                        USI._logger(self, message=f"{element_name}: {selector} ".ljust(40, '.') + USI._pr_color(self, " Element Located", "green"))
+                                        USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Exists", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
@@ -653,7 +655,7 @@ class USI:
                                                 USI._logger(self, message=f"{element_name}: text ".ljust(40, '.') + USI._pr_color(self, f" Valid: {text} ✓", color="green"))
                                 except Exception:
                                         USI._terminate_script(self, name=f"{element_name}: text", element=text, message="In-valid element text")
-
+        
 
         # Checks if the desired monitor.js has loaded in the network.
         def precapture_load(self):
@@ -661,8 +663,8 @@ class USI:
                 while tries != 0:
                         try:
                                 self.browser.execute_script('usi_js_monitor["USI_siteID"]')
-                                site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
-                                USI._logger(self, message=f"Monitor: {site_id}".ljust(40, '.') + USI._pr_color(self, " Ready", "green"))
+                                self.site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
+                                USI._logger(self, message=f"Monitor: {self.site_id}".ljust(40, '.') + USI._pr_color(self, " Ready", "green"))
                                 break
                         except Exception:
                                 sleep(3)
