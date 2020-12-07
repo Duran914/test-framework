@@ -401,7 +401,7 @@ class USI:
 
 
         # Appends string url parameters
-        def append_url(self, param, wait_param_exist=False, url=""):
+        def append_url(self, param, wait_param_exist=False, overide=False, url=""):
                 #  Check url data type
                 data_type = ["append_url(): param", str]
                 USI._precheck_data(self, param, data_type)
@@ -417,11 +417,15 @@ class USI:
                                 USI._terminate_script(self, name="URL Param", element=url, message="URL Parameter Not Found")
                 
                 if wait_param_exist == False or wait_param_exist == True and url_found == True:
-                        if '?' in self.browser.current_url:
+                        if overide == True:
+                                page_url = self.browser.current_url + param
+                        elif '?' in self.browser.current_url:
                                 page_url = self.browser.current_url + "&" + param
                         else:
                                 page_url = self.browser.current_url + "?" + param
                         USI.navigate_url(self, page_url)
+
+
 
 
         # checks if boostbar exists
@@ -632,7 +636,7 @@ class USI:
                 if locate_by == "css":
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
-                                        USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Exists", "green"))
+                                        USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Exists ✓", "green"))
                         except Exception:
                                 USI._terminate_script(self, name=element_name, element=selector)
                         
@@ -667,7 +671,7 @@ class USI:
                                 USI._logger(self, message=f"Monitor: {self.site_id}".ljust(40, '.') + USI._pr_color(self, " Ready", "green"))
                                 break
                         except Exception:
-                                sleep(3)
+                                sleep(5)
                                 tries -= 1
                                 USI._logger(self, message=f"Searching for PC Monitor ".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
                         if tries == 0:
