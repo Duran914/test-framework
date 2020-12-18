@@ -436,7 +436,7 @@ class USI:
 
                 try:
                         if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, boostbar))):
-                                USI._logger(self, message="Boostbar ".ljust(40, '.') + USI._pr_color(self, " Exists", "green"))
+                                USI._logger(self, message="Boostbar ".ljust(40, '.') + USI._pr_color(self, " Exists ✓", "green"))
                                 if bb_close_selector != "":
                                         USI.click(self, element_data={"Close boost bar":bb_close_selector})
                 except Exception:
@@ -662,20 +662,26 @@ class USI:
         
 
         # Checks if the desired monitor.js has loaded in the network.
-        def precapture_load(self):
+        def siteID_load(self):
                 tries = 3 # will try to refresh page 3 times to load email in broswer 
                 while tries != 0:
                         try:
-                                self.browser.execute_script('usi_js_monitor["USI_siteID"]')
-                                self.site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
-                                USI._logger(self, message=f"Monitor: {self.site_id}".ljust(40, '.') + USI._pr_color(self, " Ready", "green"))
+                                if self.campaign_type.lower() == "pc":
+                                        self.browser.execute_script('usi_js_monitor["USI_siteID"]')
+                                        self.site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
+                                else:
+                                        print("TT or LC")
+                                        self.browser.execute_script('usi_js.campaign.site_id')
+                                        print(self.browser.execute_script('usi_js.campaign.site_id'))
+                                        self.site_id = self.browser.execute_script('return usi_js.campaign.site_id')
+                                USI._logger(self, message=f"Site id: {self.campaign_type} {self.site_id}".ljust(40, '.') + USI._pr_color(self, " Ready ✓", "green"))
                                 break
                         except Exception:
                                 sleep(5)
                                 tries -= 1
-                                USI._logger(self, message=f"Searching for PC Monitor ".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
+                                USI._logger(self, message=f"Searching correct Site Id".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
                         if tries == 0:
-                                USI._terminate_script(self, name="USI Modal", message="Monitor.js load failed", element=".usi_display")
+                                USI._terminate_script(self, name=f"Site ID {self.site_id}", message="Failed to load", element=".usi_display")
 
         
         # Open an email in a broswer window which can be use to check email links are working 
@@ -796,8 +802,10 @@ class USI:
 
 
         # Simply refeshes a page
-        def refresh_page(self):
+        def refresh_page(self, sec=0 ):
                 self.browser.refresh()
+                if sec > 0:
+                        sleep(sec)
                 USI._logger(self, message=USI._pr_color(self, " Page refreshed", color="blue"))
 
 
