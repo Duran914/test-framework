@@ -628,7 +628,7 @@ class USI:
             Can be used as a condition for another action. 
             Ex. check_element_visibility(self, element_name="Login Modal", selector="#login-modal", locate_by="css")
         '''
-        def check_element_visibility(self, element_name, selector, text="", locate_by="css"):
+        def check_element_visibility(self, element_name, selector, text="", locate_by="css", client_modal=False):
                 data_type = ["check_element_visibility()", str]
                 validate_items = [element_name, selector, text, locate_by]
                 [USI._precheck_data(self, item, data_type) for item in validate_items]
@@ -637,8 +637,13 @@ class USI:
                         try:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector))):
                                         USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Exists ✓", "green"))
+                                if client_modal == True:
+                                        USI.click(self, {"Client modal X button":selector})
                         except Exception:
-                                USI._terminate_script(self, name=element_name, element=selector)
+                                if client_modal == True:
+                                        USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Bypass Client Modal ✓", "yellow"))
+                                else:
+                                        USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
@@ -651,7 +656,10 @@ class USI:
                                 if WebDriverWait(self.browser, 20).until(EC.visibility_of_element_located((By.XPATH, selector))):
                                         USI._logger(self, message=f"{element_name}: {selector} ".ljust(40, '.') + USI._pr_color(self, " Element Located", "green"))
                         except Exception:
-                                USI._terminate_script(self, name=element_name, element=selector)
+                                if client_modal == True:
+                                        USI._logger(self, message=f"{element_name}".ljust(40, '.') + USI._pr_color(self, " Bypass Client Modal ✓", "yellow"))
+                                else:
+                                        USI._terminate_script(self, name=element_name, element=selector)
                         
                         if text != "":                                
                                 try:
@@ -670,16 +678,14 @@ class USI:
                                         self.browser.execute_script('usi_js_monitor["USI_siteID"]')
                                         self.site_id = self.browser.execute_script('return usi_js_monitor["USI_siteID"]')
                                 else:
-                                        print("TT or LC")
                                         self.browser.execute_script('usi_js.campaign.site_id')
-                                        print(self.browser.execute_script('usi_js.campaign.site_id'))
                                         self.site_id = self.browser.execute_script('return usi_js.campaign.site_id')
                                 USI._logger(self, message=f"Site id: {self.campaign_type} {self.site_id}".ljust(40, '.') + USI._pr_color(self, " Ready ✓", "green"))
                                 break
                         except Exception:
                                 sleep(5)
                                 tries -= 1
-                                USI._logger(self, message=f"Searching correct Site Id".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
+                                USI._logger(self, message=f"Waiting for correct Site Id ".ljust(40, '.') + USI._pr_color(self, f" {tries} attempts left", "yellow"))
                         if tries == 0:
                                 USI._terminate_script(self, name=f"Site ID {self.site_id}", message="Failed to load", element=".usi_display")
 
